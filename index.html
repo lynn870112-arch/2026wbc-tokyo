@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="WBC東京2026">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3570/3570150.png">
+    <title>WBC 東京征戰 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f0f4f8; color: #1e293b; -webkit-tap-highlight-color: transparent; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* 鮮豔活潑配色案 */
+        :root {
+            --tokyo-blue: #2563eb;
+            --victory-red: #ef4444;
+            --neon-indigo: #6366f1;
+        }
+
+        .active-date { opacity: 1 !important; transform: translateY(-2px); }
+        .active-date .date-num { color: var(--tokyo-blue) !important; font-weight: 900; }
+        .active-date .date-dot { background-color: var(--victory-red); }
+        
+        .timeline-line { position: absolute; left: 19px; top: 10px; bottom: 20px; width: 3px; background: linear-gradient(to bottom, #d1d5db, #94a3b8); z-index: 0; }
+        .timeline-dot { z-index: 10; background-color: #fff; border: 3px solid var(--tokyo-blue); width: 14px; height: 14px; border-radius: 50%; position: absolute; left: 14px; top: 8px; }
+        
+        .nav-btn-active { color: var(--tokyo-blue) !important; transform: scale(1.1); }
+        
+        /* 交通卡片樣式 */
+        .transit-card {
+            margin: -1.5rem 0 1rem 2.5rem;
+            padding: 0.5rem 1rem;
+            border-left: 2px dashed #94a3b8;
+            background: rgba(255,255,255,0.5);
+            border-radius: 0 1rem 1rem 0;
+        }
+
+        .ledger-row { display: grid; grid-template-columns: 5.5rem 1fr; align-items: center; background: #fff; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 0.6rem 0.8rem; margin-bottom: 0.5rem; gap: 0.5rem; }
+        .ledger-row-label { font-size: 0.75rem; font-weight: 800; border-radius: 0.5rem; padding: 0.25rem 0; width: 100%; text-align: center; background: #f1f5f9; color: #64748b; }
+        .row-blue { background-color: #dbeafe; color: #1e40af; }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+    <header class="bg-white pt-4 pb-2 px-5 sticky top-0 z-30 shadow-md border-b-2 border-blue-500 flex-shrink-0">
+        <div class="text-center mb-2">
+            <h1 class="text-[8px] tracking-[0.3em] text-blue-400 font-black uppercase">Victory Roadmap</h1>
+            <h2 class="text-xl font-black text-slate-800">WBC 東京征戰 <span class="text-[10px] text-white bg-red-500 px-2 py-0.5 rounded-full ml-1">2026</span></h2>
+        </div>
+        
+        <div class="grid grid-cols-3 items-end min-h-[50px]">
+            <div class="col-start-1"></div>
+            <div id="date-picker-container" class="flex space-x-5 justify-center items-end pb-1"></div>
+            <div class="flex justify-end space-x-4 pb-1">
+                <button onclick="toggleView('checklist')" id="checklist-toggle" class="flex flex-col items-center text-slate-300">
+                    <i class="fas fa-suitcase text-xl mb-0.5"></i>
+                    <span class="text-[9px] font-bold">助手</span>
+                </button>
+                <button onclick="toggleView('ledger')" id="ledger-toggle" class="flex flex-col items-center text-slate-300">
+                    <i class="fas fa-calculator text-xl mb-0.5"></i>
+                    <span class="text-[9px] font-bold">帳本</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="content" class="flex-1 overflow-y-auto p-5 pb-24 bg-[#f8fafc]"></main>
+
+    <div id="detail-modal" class="fixed inset-0 bg-slate-900/80 z-50 hidden flex items-end sm:items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl overflow-hidden max-h-[90vh] flex flex-col transform translate-y-full transition-transform duration-300">
+            <div class="relative h-48 flex-shrink-0">
+                <img id="modal-img" src="" class="w-full h-full object-cover">
+                <button onclick="closeModal()" class="absolute top-4 right-4 bg-black/40 text-white rounded-full p-2 backdrop-blur-md"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <span id="modal-tag" class="text-[10px] font-black tracking-tighter bg-blue-600 px-2 py-1 rounded text-white mb-2 inline-block"></span>
+                <h3 id="modal-title" class="text-2xl font-bold text-slate-900 mb-3 leading-tight"></h3>
+                <p id="modal-desc" class="text-slate-600 leading-relaxed text-sm mb-6 whitespace-pre-line"></p>
+                <a id="modal-google-link" href="#" target="_blank" class="w-full bg-slate-900 text-white py-4 rounded-2xl flex items-center justify-center font-bold text-sm shadow-xl active:scale-95 transition-transform"><i class="fab fa-google mr-2 text-yellow-400"></i> Google Maps 導航</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const startDate = new Date('2026-03-04');
+        const members = ['CN', 'JS', 'YS'];
+        let currentDay = 1;
+        let activeTab = 'itinerary';
+        let expenses = JSON.parse(localStorage.getItem('wbc_expenses') || '[]');
+        let currentRate = 0.21;
+        let checklistState = JSON.parse(localStorage.getItem('wbc_checklist') || '{}');
+
+        // 行程資料 (範例格式)
+        const tripData = {
+            1: [
+                { time: "11:05", tag: "Arrival", title: "抵達名古屋中部機場", icon: "fa-plane-arrival", desc: "抵達後領取行李，準備前往市區轉搭新幹線。", img: "https://images.unsplash.com/photo-1570111923881-7afb0c33aee0?w=800", map: "Chubu Centrair International Airport" },
+                { transit: "🚄 μ-Sky 快速特急: 機場 -> 名古屋站 (28min)\n🚄 東海道新幹線: 名古屋 -> 東京 (1hr 40min)" },
+                { time: "15:00", tag: "Hotel", title: "APA Hotel 新御徒町 Check-in", icon: "fa-hotel", desc: "放置行李，稍作休息。", img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800", map: "APA Hotel Shin-Okachimachi" },
+                { transit: "🚶 步行 5 分鐘" },
+                { time: "18:00", tag: "Game", title: "東京巨蛋 WBC 賽事", icon: "fa-baseball-bat-ball", desc: "感受熱血氣氛！", img: "https://upload.wikimedia.org/wikipedia/commons/d/d7/Tokyo_Dome_2007-1.jpg", map: "Tokyo Dome" }
+            ],
+            2: [
+                { time: "09:00", tag: "Visit", title: "淺草寺參拜", icon: "fa-torii-gate", desc: "雷門大燈籠拍照。", img: "https://images.unsplash.com/photo-1542931237-323a19592426?w=800", map: "Senso-ji" }
+            ]
+        };
+
+        function initApp() { renderDatePicker(); renderItinerary(); }
+
+        function renderDatePicker() {
+            const picker = document.getElementById('date-picker-container');
+            picker.innerHTML = '';
+            for (let i = 0; i < 6; i++) {
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + i);
+                const dayNum = i + 1;
+                const div = document.createElement('div');
+                div.className = `flex flex-col items-center cursor-pointer opacity-30 transition-all ${dayNum === currentDay && activeTab === 'itinerary' ? 'active-date' : ''}`;
+                div.onclick = () => { activeTab = 'itinerary'; currentDay = dayNum; toggleView('itinerary'); };
+                div.innerHTML = `<span class="text-[8px] font-bold text-slate-400">MAR</span><span class="text-xl date-num font-black leading-none">${date.getDate()}</span><div class="w-1 h-1 rounded-full mt-1 date-dot"></div>`;
+                picker.appendChild(div);
+            }
+        }
+
+        function renderItinerary() {
+            const container = document.getElementById('content');
+            container.innerHTML = '<div class="timeline-wrapper relative"><div class="timeline-line"></div>';
+            let html = '';
+            
+            const dayItems = tripData[currentDay] || [{time:"--", title:"尚未安排行程", icon:"fa-calendar", desc:"休息是為了走更長遠的路"}];
+            
+            dayItems.forEach(item => {
+                if (item.transit) {
+                    html += `<div class="transit-card"><div class="flex items-center gap-2 text-blue-600 font-bold text-[11px]"><i class="fas fa-train-subway"></i><p class="whitespace-pre-line">${item.transit}</p></div></div>`;
+                } else {
+                    html += `
+                    <div class="relative mb-8 pl-10" onclick="showModal('${encodeURIComponent(JSON.stringify(item))}')">
+                        <div class="timeline-dot"></div>
+                        <div class="flex items-center mb-1"><span class="text-lg font-black text-slate-800 mr-2">${item.time}</span><div class="h-[1px] flex-1 bg-slate-200"></div></div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition-transform">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i class="fas ${item.icon} text-blue-500 text-xs"></i>
+                                <span class="text-[9px] font-black text-blue-500 uppercase tracking-widest">${item.tag}</span>
+                            </div>
+                            <h3 class="text-sm font-bold text-slate-800">${item.title}</h3>
+                        </div>
+                    </div>`;
+                }
+            });
+            container.innerHTML += html + '</div>';
+        }
+
+        function toggleView(view) {
+            activeTab = view;
+            document.getElementById('ledger-toggle').className = `flex flex-col items-center transition-all ${view === 'ledger' ? 'nav-btn-active' : 'text-slate-300'}`;
+            document.getElementById('checklist-toggle').className = `flex flex-col items-center transition-all ${view === 'checklist' ? 'nav-btn-active' : 'text-slate-300'}`;
+            
+            if (view === 'ledger') renderLedger();
+            else if (view === 'checklist') renderAssistant();
+            else renderItinerary();
+            renderDatePicker();
+        }
+
+        function renderAssistant() {
+            const container = document.getElementById('content');
+            container.innerHTML = `
+                <div class="space-y-6">
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-blue-50">
+                        <h3 class="font-black text-blue-600 mb-4 flex items-center uppercase text-sm"><i class="fas fa-list-check mr-2"></i> 打包清單</h3>
+                        <div class="space-y-2">
+                            ${['護照/日幣/網卡', 'WBC 門票 (電子/紙本)', '應援毛巾/球衣', '行動電源/轉接頭'].map(item => `
+                                <label class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl">
+                                    <span class="text-sm font-bold text-slate-700">${item}</span>
+                                    <input type="checkbox" onchange="toggleCheck('${item}')" ${checklistState[item]?'checked':''} class="w-5 h-5 accent-blue-600">
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="bg-red-50 p-5 rounded-3xl border border-red-100">
+                        <h3 class="font-black text-red-600 mb-4 flex items-center text-sm"><i class="fas fa-phone-alt mr-2"></i> 緊急聯絡</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="bg-white p-3 rounded-xl border border-red-200 text-center">
+                                <p class="text-[10px] font-bold text-slate-400">日本警察</p>
+                                <p class="font-black text-red-600">110</p>
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-red-200 text-center">
+                                <p class="text-[10px] font-bold text-slate-400">駐日代表處</p>
+                                <p class="font-black text-red-600">03-3280-7811</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800 p-5 rounded-3xl text-white shadow-xl">
+                        <h3 class="font-black text-yellow-400 mb-4 flex items-center text-sm"><i class="fas fa-subway mr-2"></i> 快速交通查詢</h3>
+                        <p class="text-[11px] text-slate-400 mb-4">即時查詢班次、月台與轉乘建議：</p>
+                        <div class="grid grid-cols-1 gap-3">
+                            <a href="https://transit.yahoo.co.jp/" target="_blank" class="flex items-center justify-between bg-slate-700 p-4 rounded-2xl active:bg-slate-600">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-map-location-dot text-xl text-yellow-400"></i>
+                                    <span class="font-bold">Yahoo! 乘換案內</span>
+                                </div>
+                                <i class="fas fa-chevron-right text-slate-500"></i>
+                            </a>
+                            <a href="https://www.google.com/maps" target="_blank" class="flex items-center justify-between bg-slate-700 p-4 rounded-2xl active:bg-slate-600">
+                                <div class="flex items-center gap-3">
+                                    <i class="fab fa-google text-xl text-blue-400"></i>
+                                    <span class="font-bold">Google Maps</span>
+                                </div>
+                                <i class="fas fa-chevron-right text-slate-500"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        function renderLedger() {
+            const container = document.getElementById('content');
+            container.innerHTML = `
+                <div class="space-y-5">
+                    <div class="bg-white p-6 rounded-3xl border border-blue-50 shadow-sm">
+                        <h3 class="text-base font-black text-slate-800 flex items-center mb-4"><i class="fas fa-plus-circle mr-2 text-blue-500"></i> 新增支出</h3>
+                        <div class="ledger-row"><span class="ledger-row-label">項目</span><input type="text" id="exp-desc" placeholder="例如：新幹線、球券" class="bg-transparent outline-none font-bold text-center"></div>
+                        <div class="ledger-row"><span class="ledger-row-label row-blue">金額</span><input type="number" id="exp-amount" placeholder="0" class="bg-transparent outline-none font-black text-center text-blue-600"></div>
+                        <div class="ledger-row"><span class="ledger-row-label">支付者</span><select id="exp-payer" class="bg-transparent outline-none font-bold text-center w-full">${members.map(m => `<option>${m}</option>`).join('')}</select></div>
+                        <button onclick="addExpense()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg active:scale-95 mt-4 transition-transform">儲存紀錄</button>
+                    </div>
+                    <div id="expense-list" class="space-y-2 pb-10">${renderExpenseList()}</div>
+                </div>`;
+        }
+
+        function renderExpenseList() {
+            return expenses.map(exp => `
+                <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm">
+                    <div>
+                        <p class="text-xs font-black text-slate-800">${exp.desc}</p>
+                        <p class="text-[9px] text-slate-400 font-bold uppercase">${exp.payer} 支付</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-black text-slate-700">¥${exp.amount}</span>
+                        <button onclick="deleteExpense(${exp.id})" class="text-slate-200"><i class="fas fa-trash-alt text-xs"></i></button>
+                    </div>
+                </div>`).join('');
+        }
+
+        function addExpense() {
+            const amount = document.getElementById('exp-amount').value;
+            const desc = document.getElementById('exp-desc').value;
+            const payer = document.getElementById('exp-payer').value;
+            if (!amount || !desc) return;
+            expenses.unshift({ id: Date.now(), amount, desc, payer });
+            localStorage.setItem('wbc_expenses', JSON.stringify(expenses));
+            renderLedger();
+        }
+
+        function deleteExpense(id) {
+            expenses = expenses.filter(e => e.id !== id);
+            localStorage.setItem('wbc_expenses', JSON.stringify(expenses));
+            renderLedger();
+        }
+
+        function showModal(itemStr) {
+            const item = JSON.parse(decodeURIComponent(itemStr));
+            const modal = document.getElementById('detail-modal');
+            document.getElementById('modal-img').src = item.img;
+            document.getElementById('modal-tag').textContent = item.tag;
+            document.getElementById('modal-title').textContent = item.title;
+            document.getElementById('modal-desc').textContent = item.desc;
+            document.getElementById('modal-google-link').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.map)}`;
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); modal.querySelector('div').classList.remove('translate-y-full'); }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('detail-modal');
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.add('translate-y-full');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        function toggleCheck(item) {
+            checklistState[item] = !checklistState[item];
+            localStorage.setItem('wbc_checklist', JSON.stringify(checklistState));
+        }
+
+        window.addEventListener('load', initApp);
+    </script>
+</body>
+</html>
