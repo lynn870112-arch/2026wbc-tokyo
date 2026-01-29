@@ -3,252 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026 WBC 應援之旅</title>
+    <title>WBC 應援之旅 2026</title>
     <style>
-        /* CSS 樣式區 */
         :root {
             --primary-blue: #0035ad;
             --wbc-red: #e4002b;
-            --bg-gray: #f4f7f9;
-            --text-dark: #333;
+            --bg-gray: #f2f4f7;
+            --card-white: #ffffff;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, "Noto Sans TC", sans-serif;
             background-color: var(--bg-gray);
-            color: var(--text-dark);
-            margin: 0;
-            padding: 0;
-            line-height: 1.5;
+            margin: 0; padding: 0;
+            color: #333;
         }
 
-        .app-container {
+        /* 頂部固定選單 */
+        nav {
+            position: sticky;
+            top: 0;
+            display: flex;
+            background: var(--primary-blue);
+            padding: 10px 5px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .nav-item {
+            flex: 1;
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+            padding: 10px 0;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .nav-item.active {
+            color: white;
+            border-bottom: 3px solid var(--wbc-red);
+        }
+
+        /* 內容區塊 */
+        .content-section {
+            display: none;
+            padding: 15px;
             max-width: 600px;
             margin: 0 auto;
-            padding-bottom: 40px;
         }
 
-        header {
-            background: linear-gradient(135deg, var(--primary-blue), #0056b3);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-            border-bottom-left-radius: 30px;
-            border-bottom-right-radius: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
+        .content-section.active { display: block; }
 
-        h1 { margin: 0; font-size: 1.6rem; letter-spacing: 1px; }
-        
-        /* 倒數計時樣式 */
-        #countdown {
-            background: rgba(255, 255, 255, 0.2);
-            display: inline-block;
-            padding: 8px 15px;
-            border-radius: 20px;
-            margin-top: 15px;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        /* 行程卡片 */
+        /* 行程字卡與展開邏輯 */
         .day-card {
-            background: white;
-            margin: 20px 15px;
-            border-radius: 15px;
+            background: var(--card-white);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            border-left: 5px solid var(--primary-blue);
         }
 
         .day-header {
-            background-color: #f8f9fa;
-            padding: 12px 20px;
-            font-weight: 800;
-            font-size: 1.1rem;
-            color: var(--primary-blue);
-            border-bottom: 1px solid #eee;
+            padding: 15px 20px;
+            background: #fff;
             display: flex;
             justify-content: space-between;
-        }
-
-        .hotel-info {
-            padding: 10px 20px;
-            background: #fff9e6;
-            font-size: 0.85rem;
-            color: #856404;
-            display: flex;
             align-items: center;
+            cursor: pointer;
+            border-left: 6px solid var(--primary-blue);
         }
 
-        .activity-list { padding: 10px 0; }
+        .day-header h3 { margin: 0; font-size: 1.1rem; }
+        .day-header .date-info { color: #666; font-size: 0.85rem; }
 
-        .activity-item {
-            display: flex;
-            padding: 15px 20px;
-            border-bottom: 1px solid #f0f0f0;
+        .day-details {
+            display: none;
+            padding: 0 20px 15px 20px;
+            border-top: 1px solid #eee;
         }
 
-        .activity-item:last-child { border-bottom: none; }
-
-        .time {
-            min-width: 95px;
-            font-size: 0.85rem;
-            color: #888;
-            font-weight: 600;
-        }
-
-        .event { flex: 1; font-size: 1rem; }
-
-        /* WBC 比賽高亮 */
-        .wbc-highlight {
-            color: var(--wbc-red);
-            font-weight: bold;
-            background: #fff0f0;
-            padding: 2px 5px;
+        /* 交通方式樣式 */
+        .transport-tag {
+            background: #e9ecef;
+            color: #495057;
+            padding: 2px 8px;
             border-radius: 4px;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            display: inline-block;
         }
 
-        footer {
-            text-align: center;
-            padding: 20px;
-            font-size: 0.8rem;
-            color: #aaa;
+        .event-item {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px dashed #eee;
         }
+
+        .event-time { width: 90px; color: #888; font-size: 0.85rem; font-weight: 600; }
+        .event-text { flex: 1; font-size: 0.95rem; }
+
+        .wbc-match { color: var(--wbc-red); font-weight: bold; }
+
+        /* 助手區塊樣式 */
+        .assistant-card {
+            background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px;
+        }
+
+        /* 記帳本樣式 */
+        .ledger-table {
+            width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden;
+        }
+        .ledger-table th, .ledger-table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        .ledger-table th { background: #f8f9fa; }
+
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <header>
-        <h1>⚾ 2026 WBC 應援之旅</h1>
-        <div id="countdown">載入計時中...</div>
-    </header>
-    
-    <div id="itinerary-list">
-        </div>
+<nav>
+    <div class="nav-item active" onclick="showTab('itinerary')">🗓️ 行程</div>
+    <div class="nav-item" onclick="showTab('assistant')">🤖 助手</div>
+    <div class="nav-item" onclick="showTab('ledger')">💰 記帳</div>
+</nav>
 
-    <footer>
-        <p>為台灣英雄加油！加油加油！</p>
-    </footer>
+<div id="itinerary" class="content-section active">
+    <div class="day-card">
+        <div class="day-header" onclick="toggleDetails('d1')">
+            <div>
+                <h3>3/4 (三) 抵達日本</h3>
+                <span class="date-info">名古屋 -> 東京</span>
+            </div>
+            <span>▼</span>
+        </div>
+        <div id="d1" class="day-details">
+            <span class="transport-tag">✈️ 華航 CI154 | 🚄 μ-sky | 🚅 新幹線</span>
+            <div class="event-item"><div class="event-time">07:35-11:05</div><div class="event-text">桃園機場 -> 名古屋中部機場 (NGO)</div></div>
+            <div class="event-item"><div class="event-time">11:45-12:30</div><div class="event-text">搭乘 <b>μ-sky</b> 前往名古屋站 (需購票)</div></div>
+            <div class="event-item"><div class="event-time">15:00-16:40</div><div class="event-text">搭乘 <b>新幹線</b> (希望號) 前往東京站 <br><small>⚠️ 務必預約「特大行李位」</small></div></div>
+            <div class="event-item"><div class="event-time">17:00</div><div class="event-text">APA Hotel 新御徒町 Check-in</div></div>
+            <div class="event-item"><div class="event-time">17:30-21:00</div><div class="event-text">阿美橫町補給 & 秋葉原漫步</div></div>
+        </div>
+    </div>
+
+    <div class="day-card">
+        <div class="day-header" onclick="toggleDetails('d2')">
+            <div>
+                <h3>3/5 (四) WBC 第一戰</h3>
+                <span class="date-info">淺草寺 -> 東京巨蛋</span>
+            </div>
+            <span>▼</span>
+        </div>
+        <div id="d2" class="day-details">
+            <span class="transport-tag">🚃 地鐵 (大江戶線/銀座線)</span>
+            <div class="event-item"><div class="event-time">08:00-10:30</div><div class="event-text">淺草寺參拜、雷門</div></div>
+            <div class="event-item"><div class="event-time">12:00-15:30</div><div class="event-text"><span class="wbc-match">⚾ WBC：台灣 vs 澳洲</span></div></div>
+            <div class="event-item"><div class="event-time">16:00-17:00</div><div class="event-text">神保町 Mizuno 旗艦店</div></div>
+            <div class="event-item"><div class="event-time">17:30-21:00</div><div class="event-text">新宿逛街 & 晚餐</div></div>
+        </div>
+    </div>
+
+    <div class="day-card">
+        <div class="day-header" onclick="toggleDetails('d3')">
+            <div>
+                <h3>3/6 (五) 鎌倉江之島</h3>
+                <span class="date-info">古都巡禮 -> 轉播觀戰</span>
+            </div>
+            <span>▼</span>
+        </div>
+        <div id="d3" class="day-details">
+            <span class="transport-tag">🚃 JR湘南新宿線 | 🚞 江之電</span>
+            <div class="event-item"><div class="event-time">08:00-11:00</div><div class="event-text">搭車前往鎌倉：鶴岡八幡宮 & 小町通</div></div>
+            <div class="event-item"><div class="event-time">11:00-13:00</div><div class="event-text">江之電體驗：長谷寺 (大佛) & 鎌倉高校前</div></div>
+            <div class="event-item"><div class="event-time">13:30-16:00</div><div class="event-text">江之島步行：江島神社、展望燈塔</div></div>
+            <div class="event-item"><div class="event-time">19:00-22:00</div><div class="event-text"><span class="wbc-match">📺 觀戰：台灣 vs 日本 (地點待定)</span></div></div>
+        </div>
+    </div>
+
+    <div class="day-card">
+        <div class="day-header" onclick="toggleDetails('d4')">
+            <div><h3>3/7-3/10 更多行程...</h3></div>
+            <span>▼</span>
+        </div>
+        <div id="d4" class="day-details">
+            <p>3/7: ⚾ 台灣 vs 捷克 | 澀谷/原宿</p>
+            <p>3/8: ⚾ 台灣 vs 韓國 | 🚄 回名古屋</p>
+            <p>3/9: 名古屋城 | 大須觀音 | 榮商圈</p>
+            <p>3/10: ✈️ CI151 回台灣</p>
+        </div>
+    </div>
+</div>
+
+<div id="assistant" class="content-section">
+    <div class="assistant-card">
+        <h3>📍 常備資訊</h3>
+        <p><b>飯店1：</b>APA Hotel 新御徒町 (3/4-3/7)</p>
+        <p><b>飯店2：</b>APA 名古屋站前北 (3/8-3/9)</p>
+    </div>
+    <div class="assistant-card">
+        <h3>⚾ WBC 應援須知</h3>
+        <ul>
+            <li>東京巨蛋可帶水瓶，但不能帶罐裝飲料。</li>
+            <li>比賽時間預計 3.5 小時。</li>
+            <li>Mizuno 裝備建議：購買應援球衣與毛巾。</li>
+        </ul>
+    </div>
+</div>
+
+<div id="ledger" class="content-section">
+    <table class="ledger-table">
+        <thead><tr><th>日期</th><th>項目</th><th>金額 (JPY)</th></tr></thead>
+        <tbody>
+            <tr><td>3/4</td><td>μ-sky 車票</td><td>1,230</td></tr>
+            <tr><td>3/4</td><td>新幹線 (特大行李)</td><td>11,300</td></tr>
+            <tr><td>3/5</td><td>WBC 球票</td><td>15,000</td></tr>
+        </tbody>
+    </table>
+    <div style="text-align: right; padding: 15px; font-weight: bold;">
+        預估總額：¥ 27,530
+    </div>
 </div>
 
 <script>
-    // JS 資料區
-    const tripData = {
-        "startDate": "2026-03-04",
-        "days": [
-            {
-                "date": "3/4 (三)",
-                "hotel": "APA Hotel 新御徒町",
-                "events": [
-                    ["07:35-11:05", "CI154 飛抵名古屋中部機場"],
-                    ["11:45-12:30", "μ-sky 特急前往名古屋站"],
-                    ["15:00-16:40", "新幹線往東京 (特大行李位)"],
-                    ["17:00", "飯店 Check-in"],
-                    ["17:30-21:00", "阿美橫町 & 秋葉原巡禮"]
-                ]
-            },
-            {
-                "date": "3/5 (四)",
-                "hotel": "APA Hotel 新御徒町",
-                "events": [
-                    ["08:00-10:30", "淺草寺參拜"],
-                    ["12:00-15:30", "<span class='wbc-highlight'>⚾ WBC：台灣 vs 澳洲</span>"],
-                    ["16:00-17:00", "神保町 Mizuno 旗艦店"],
-                    ["17:30-21:00", "新宿逛街、晚餐"]
-                ]
-            },
-            {
-                "date": "3/6 (五)",
-                "hotel": "APA Hotel 新御徒町",
-                "events": [
-                    ["08:00-17:00", "鎌倉、江之島一日遊"],
-                    ["19:00-22:00", "<span class='wbc-highlight'>📺 WBC轉播：台灣 vs 日本</span>"]
-                ]
-            },
-            {
-                "date": "3/7 (六)",
-                "hotel": "APA Hotel 新御徒町",
-                "events": [
-                    ["08:30-10:30", "日枝神社 (山王鳥居)"],
-                    ["12:00-15:30", "<span class='wbc-highlight'>⚾ WBC：台灣 vs 捷克</span>"],
-                    ["16:00-21:00", "原宿、澀谷逛街"]
-                ]
-            },
-            {
-                "date": "3/8 (日)",
-                "hotel": "APA 名古屋站前北",
-                "events": [
-                    ["12:00-15:30", "<span class='wbc-highlight'>⚾ WBC：台灣 vs 韓國</span>"],
-                    ["18:30-20:10", "搭乘新幹線回名古屋"],
-                    ["20:30", "APA 名古屋站前北 Check-in"]
-                ]
-            },
-            {
-                "date": "3/9 (一)",
-                "hotel": "APA 名古屋站前北",
-                "events": [
-                    ["09:00-11:30", "名古屋城巡禮"],
-                    ["12:00-15:00", "大須觀音與商店街"],
-                    ["16:00-20:30", "榮商圈、綠洲 21、晚餐"]
-                ]
-            },
-            {
-                "date": "3/10 (二)",
-                "hotel": "準備回家",
-                "events": [
-                    ["07:30-08:30", "μ-sky 前往中部機場"],
-                    ["09:50-12:15", "CI151 飛往桃園機場"]
-                ]
-            }
-        ]
-    };
-
-    // 渲染行程
-    function init() {
-        const list = document.getElementById('itinerary-list');
-        let html = '';
-
-        tripData.days.forEach(day => {
-            html += `
-                <div class="day-card">
-                    <div class="day-header"><span>${day.date}</span></div>
-                    <div class="hotel-info">📍 住宿：${day.hotel}</div>
-                    <div class="activity-list">
-                        ${day.events.map(e => `
-                            <div class="activity-item">
-                                <div class="time">${e[0]}</div>
-                                <div class="event">${e[1]}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
+    // 選單切換
+    function showTab(tabId) {
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('active');
         });
-        list.innerHTML = html;
-        updateCountdown();
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
     }
 
-    // 倒數計時邏輯
-    function updateCountdown() {
-        const target = new Date(tripData.startDate + "T07:35:00").getTime();
-        const now = new Date().getTime();
-        const diff = target - now;
-
-        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const el = document.getElementById('countdown');
+    // 展開/收合卡片
+    function toggleDetails(id) {
+        const detail = document.getElementById(id);
+        const icon = detail.previousElementSibling.querySelector('span:last-child');
         
-        if (d > 0) {
-            el.innerText = `距離出發還有 ${d} 天`;
-        } else if (d === 0) {
-            el.innerText = `就是今天！準備出發 ✈️`;
+        if (detail.style.display === "block") {
+            detail.style.display = "none";
+            icon.innerText = "▼";
         } else {
-            el.innerText = `行程進行中 / 已結束 ⚾`;
+            detail.style.display = "block";
+            icon.innerText = "▲";
         }
     }
-
-    window.onload = init;
 </script>
 
 </body>
