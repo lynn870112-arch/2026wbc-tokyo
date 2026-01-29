@@ -15,187 +15,154 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
         
-        /* WBC 2026 深色主題配色 */
         :root {
-            --wbc-bg-dark: #003028; /* 深綠色背景 */
-            --wbc-card-dark: #0A4538; /* 卡片深色 */
-            --wbc-text-light: #F5F5F3; /* 淺色文字 */
-            --wbc-accent-yellow: #FFD200; /* 黃色 */
-            --wbc-accent-orange: #F58220; /* 橘色 */
-            --wbc-accent-pink: #E4007F; /* 粉紅 */
-            --wbc-accent-red: #E4002B; /* 紅色 */
-            --wbc-accent-purple: #92278F; /* 紫色 */
-            --wbc-accent-blue: #0054A6; /* 藍色 */
-            --wbc-accent-cyan: #00AEEF; /* 青色 */
-            --wbc-accent-green: #009B4D; /* 綠色 */
+            --wbc-bg-main: #002B24; /* 官方深綠底 */
+            --wbc-card-light: #F8F9FA; /* 淺色字卡，提高閱讀性 */
+            --wbc-accent-blue: #0054A6;
+            --wbc-accent-red: #E4002B;
+            --wbc-accent-yellow: #FFD200;
         }
 
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: var(--wbc-bg-dark);
-            color: var(--wbc-text-light);
+            background-color: var(--wbc-bg-main);
+            color: #E2E8F0;
             -webkit-tap-highlight-color: transparent;
-            /* 背景幾何紋理 */
-            background-image: radial-gradient(circle at 10% 20%, rgba(0,174,239,0.1) 0%, transparent 20%),
-                              radial-gradient(circle at 90% 80%, rgba(228,0,127,0.1) 0%, transparent 20%);
         }
-        h2, .font-serif { font-family: 'Noto Serif TC', serif; }
-        
-        /* 日期選擇器 */
-        .date-item { opacity: 0.5; transition: all 0.3s ease; }
-        .active-date { opacity: 1 !important; transform: translateY(-2px); }
-        .active-date .date-num { color: var(--wbc-accent-yellow) !important; font-weight: 800; }
-        .date-dot { width: 4px; height: 4px; border-radius: 50%; background-color: transparent; margin: 4px auto 0; }
-        .active-date .date-dot { background-color: var(--wbc-accent-pink); }
 
-        /* 時間軸 */
-        .timeline-line { position: absolute; left: 19px; top: 10px; bottom: 20px; width: 2px; background: linear-gradient(to bottom, var(--wbc-accent-yellow), var(--wbc-accent-orange), var(--wbc-accent-pink), var(--wbc-accent-purple), var(--wbc-accent-blue), var(--wbc-accent-cyan), var(--wbc-accent-green)); z-index: 0; opacity: 0.7; }
-        .timeline-dot { z-index: 10; background-color: var(--wbc-bg-dark); border: 2px solid var(--wbc-accent-yellow); width: 12px; height: 12px; border-radius: 50%; position: absolute; left: 14px; top: 8px; }
+        /* 攤平的日期選單 */
+        .date-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            padding: 10px;
+        }
+        .date-item { opacity: 0.4; transition: 0.3s; }
+        .active-date { opacity: 1 !important; transform: scale(1.05); }
+        .active-date .date-box { border-bottom: 3px solid var(--wbc-accent-red); color: var(--wbc-accent-yellow); }
 
-        /* 轉乘區塊 */
-        .transit-step { position: relative; margin-left: 1.5rem; padding: 0.5rem 1rem; border-left: 2px dashed rgba(255,255,255,0.3); margin-top: -0.5rem; margin-bottom: 0.5rem; }
-        .transit-badge { background-color: rgba(10, 69, 56, 0.8); border: 1px solid rgba(255,255,255,0.1); color: var(--wbc-accent-cyan); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 99px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        /* 行程字卡：淺底深字 */
+        .itinerary-card {
+            background: var(--wbc-card-light);
+            color: #1A202C;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            border-left: 5px solid var(--wbc-accent-blue);
+        }
 
-        /* 字卡 */
-        .itinerary-card { background: var(--wbc-card-dark); border-radius: 1.25rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); }
+        /* 時間軸線 */
+        .timeline-line { position: absolute; left: 19px; top: 10px; bottom: 20px; width: 2px; background: rgba(255,255,255,0.1); z-index: 0; }
+        .timeline-dot { z-index: 10; background-color: var(--wbc-bg-main); border: 2px solid var(--wbc-accent-yellow); width: 12px; height: 12px; border-radius: 50%; position: absolute; left: 14px; top: 8px; }
 
-        /* 導覽列 */
-        .nav-btn-active { color: var(--wbc-accent-pink) !important; }
-        #app-header { border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(0, 48, 40, 0.95); backdrop-filter: blur(10px); }
+        /* 轉乘動線樣式 */
+        .transit-row { margin-left: 1.5rem; padding: 0.8rem 1rem; border-left: 2px dashed rgba(255,255,255,0.2); }
+        .transit-label { background: rgba(255,255,255,0.05); color: #90CDF4; font-size: 10px; font-weight: bold; padding: 4px 10px; border-radius: 8px; display: inline-flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,0.1); }
 
-        /* 地圖 */
-        #map-container { height: 260px; width: 100%; border-radius: 1.5rem; margin-top: 1.5rem; border: 3px solid var(--wbc-card-dark); box-shadow: 0 4px 12px rgba(0,0,0,0.4); z-index: 10; filter: invert(1) hue-rotate(180deg) brightness(0.8) contrast(1.2); }
-        .leaflet-control-attribution { display: none; }
-
-        /* Modal */
-        #detail-modal .bg-white { background-color: var(--wbc-bg-dark) !important; color: var(--wbc-text-light) !important; border-top: 2px solid var(--wbc-accent-pink); }
+        #map-container { height: 240px; border-radius: 1rem; margin-top: 1rem; filter: invert(1) hue-rotate(180deg) brightness(0.8); }
     </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
 
-    <header id="app-header" class="pt-4 pb-2 px-4 sticky top-0 z-30 shadow-sm flex-shrink-0">
-        <div class="text-center mb-2">
-            <div class="flex items-center justify-center gap-2 mb-1">
-                <div class="w-5 h-5 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-blue-500"></div>
-                <h1 class="text-[10px] tracking-[0.2em] text-gray-300 font-bold uppercase">World Baseball Classic 2026</h1>
-            </div>
-            <h2 class="text-xl font-bold text-white">應援之旅 <span class="text-xs font-normal text-white bg-gradient-to-r from-pink-600 to-purple-600 px-2 py-0.5 rounded-full ml-1">TOKYO</span></h2>
+    <header class="bg-[#002B24] pt-4 pb-2 sticky top-0 z-30 shadow-xl">
+        <div class="text-center mb-2 px-5">
+            <h1 class="text-[9px] tracking-[0.3em] text-cyan-400 font-bold uppercase">2026 WBC TOKYO / NAGOYA</h1>
+            <h2 class="text-lg font-bold text-white font-serif">⚾ 應援之旅攻略</h2>
         </div>
         
-        <div class="flex flex-col">
-            <div id="date-picker-container" class="grid grid-cols-7 gap-1 justify-items-center items-end pb-2"></div>
-            <div class="flex justify-end space-x-3 pb-0.5 border-t border-white/10 pt-2">
-                <button onclick="toggleView('checklist')" id="checklist-toggle" class="flex flex-col items-center text-gray-400">
-                    <i class="fas fa-toolbox text-lg mb-0.5"></i>
-                    <span class="text-[9px] font-bold">助手</span>
-                </button>
-                <button onclick="toggleView('ledger')" id="ledger-toggle" class="flex flex-col items-center text-gray-400">
-                    <i class="fas fa-wallet text-lg mb-0.5"></i>
-                    <span class="text-[9px] font-bold">帳本</span>
-                </button>
-            </div>
+        <div id="date-picker-container" class="date-grid"></div>
+
+        <div class="flex justify-around px-10 py-2 border-t border-white/10 mt-2">
+            <button onclick="toggleView('checklist')" class="text-gray-400 flex flex-col items-center"><i class="fas fa-toolbox"></i><span class="text-[8px]">助手</span></button>
+            <button onclick="toggleView('itinerary')" class="text-yellow-400 flex flex-col items-center"><i class="fas fa-calendar-day"></i><span class="text-[8px]">行程</span></button>
+            <button onclick="toggleView('ledger')" class="text-gray-400 flex flex-col items-center"><i class="fas fa-wallet"></i><span class="text-[8px]">帳本</span></button>
         </div>
     </header>
 
     <main id="content" class="flex-1 overflow-y-auto p-5 pb-24"></main>
 
-    <div id="detail-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-end justify-center opacity-0 transition-opacity duration-300">
-        <div class="bg-white w-full max-w-md rounded-t-3xl overflow-hidden max-h-[90vh] flex flex-col translate-y-full transition-transform duration-300">
-            <div class="relative h-56 flex-shrink-0">
+    <div id="detail-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-end justify-center transition-opacity duration-300">
+        <div class="bg-[#F8F9FA] w-full max-w-md rounded-t-3xl overflow-hidden max-h-[85vh] flex flex-col translate-y-full transition-transform duration-300">
+            <div class="relative h-48 flex-shrink-0">
                 <img id="modal-img" src="" class="w-full h-full object-cover">
-                <button onclick="closeModal()" class="absolute top-4 right-4 bg-black/50 text-white rounded-full p-2 backdrop-blur-sm"><i class="fas fa-xmark"></i></button>
+                <button onclick="closeModal()" class="absolute top-4 right-4 bg-black/50 text-white rounded-full p-2"><i class="fas fa-xmark"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto bg-[#003028]">
-                <span id="modal-tag" class="text-[10px] font-bold tracking-widest uppercase bg-pink-600 px-2 py-1 rounded text-white mb-2 inline-block"></span>
-                <h3 id="modal-title" class="text-2xl font-bold text-white mb-2 leading-tight"></h3>
-                <p id="modal-desc" class="text-gray-300 leading-relaxed text-sm mb-6 whitespace-pre-line"></p>
-                <div id="modal-transport-container" class="hidden mb-6 bg-[#0A4538] p-4 rounded-xl border border-pink-600/30">
-                    <h4 class="text-[10px] font-bold text-pink-400 uppercase mb-1"><i class="fas fa-train mr-1"></i> 交通/轉乘資訊</h4>
-                    <p id="modal-transport" class="text-xs text-gray-300 leading-relaxed"></p>
-                </div>
-                <a id="modal-google-link" href="#" target="_blank" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl flex items-center justify-center font-bold text-sm shadow-lg transition-transform active:scale-95"><i class="fab fa-google mr-2 text-yellow-400"></i> Google Maps 導航</a>
+            <div class="p-6 overflow-y-auto text-gray-800">
+                <span id="modal-tag" class="text-[10px] font-bold bg-blue-600 text-white px-2 py-1 rounded"></span>
+                <h3 id="modal-title" class="text-xl font-bold mt-2 mb-4"></h3>
+                <p id="modal-desc" class="text-sm leading-relaxed mb-6 whitespace-pre-line"></p>
+                <a id="modal-google-link" href="#" target="_blank" class="w-full bg-blue-700 text-white py-4 rounded-xl flex items-center justify-center font-bold text-sm shadow-lg"><i class="fab fa-google mr-2"></i> Google Maps 導航</a>
             </div>
         </div>
     </div>
 
     <script>
-        // --- 核心變數 (WBC 日期) ---
         const startDate = new Date('2026-03-04');
         const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
         let currentDay = 1;
-        let activeTab = 'itinerary';
-        let map = null;
 
-        // --- 完整行程資料 (含詳細站對站轉乘資訊) ---
+        // --- 完整 7 天行程資料 ---
         const tripData = {
             1: [
-                { time: "07:35", tag: "Flight", title: "桃園機場 (CI154) 飛抵名古屋", icon: "fa-plane", map: "桃園國際機場", desc: "正式開啟應援之旅。請於 05:30 抵達二航廈辦理手續。", img: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1000", lat: 25.079, lng: 121.234 },
-                { transit: "μ-sky 特急", from: "中部國際機場站", to: "名鐵名古屋站", duration: "28 min", icon: "fa-train" },
-                { time: "11:45", tag: "Transit", title: "抵達名古屋市區", icon: "fa-location-dot", map: "名古屋車站", desc: "抵達名鐵名古屋站，步行前往 JR 名古屋站轉乘新幹線。", img: "https://upload.wikimedia.org/wikipedia/commons/2/29/Meitetsu_2000_series_U-SKY.jpg", lat: 35.170, lng: 136.881 },
-                { transit: "JR 新幹線 Nozomi", from: "名古屋站", to: "東京站", duration: "1h 40min", icon: "fa-bolt", note: "⚠️ 需預約特大行李位" },
-                { time: "15:00", tag: "Shinkansen", title: "新幹線前往東京", icon: "fa-bolt", map: "東京車站", desc: "搭乘新幹線直奔東京。沿途可欣賞風景，抵達後轉乘地鐵。", img: "https://images.unsplash.com/photo-1542365887-11499f1ddee5?q=80&w=1000", lat: 35.681, lng: 139.767 },
-                { transit: "JR 山手線 / 京濱東北線", from: "東京站", to: "御徒町站", duration: "6 min", icon: "fa-train" },
-                { transit: "步行換乘", from: "御徒町站", to: "新御徒町站 (A1出口)", duration: "8 min", icon: "fa-person-walking" },
-                { time: "17:00", tag: "Hotel", title: "APA Hotel 新御徒町 Check-in", icon: "fa-hotel", map: "APA Hotel Shin Okachimachi", desc: "放下大行李，稍作休息準備前往阿美橫町。", img: "https://www.apahotel.com/view_img.php?id=32402", lat: 35.706, lng: 139.780 },
-                { transit: "步行", from: "飯店", to: "阿美橫町", duration: "10 min", icon: "fa-person-walking" },
-                { time: "17:30", tag: "Shopping", title: "阿美橫町 & 秋葉原", icon: "fa-bag-shopping", map: "阿美橫町", desc: "晚餐與物資補給。順便去秋葉原巡禮，感受動漫聖地氛圍。", img: "https://images.unsplash.com/photo-1555529733-0e670560f7e1?q=80&w=1000", lat: 35.710, lng: 139.774 }
+                { time: "07:35", tag: "Flight", title: "桃園機場 CI154 出發", icon: "fa-plane", map: "桃園國際機場", desc: "請於 05:30 抵達第二航廈辦理登機。" },
+                { transit: "μ-sky 特急", from: "中部機場站", to: "名鐵名古屋站", duration: "28分" },
+                { time: "11:45", tag: "Transit", title: "抵達名古屋車站", icon: "fa-location-dot", map: "JR名古屋站", desc: "抵達後請前往 JR 新幹線轉乘窗口。" },
+                { transit: "新幹線 Nozomi", from: "名古屋站", to: "東京站", duration: "100分", note: "⚠️ 需預約特大行李位" },
+                { time: "16:40", tag: "Hotel", title: "APA Hotel 新御徒町 Check-in", icon: "fa-hotel", map: "APA Hotel Shin Okachimachi", desc: "抵達東京基地。休息片刻準備採買。" },
+                { transit: "步行", from: "飯店", to: "阿美橫町", duration: "12分" },
+                { time: "18:00", tag: "Night", title: "阿美橫町 & 秋葉原", icon: "fa-shopping-bag", map: "秋葉原", desc: "晚餐與應援物資補給。" },
+                { transit: "步行", from: "秋葉原", to: "飯店", duration: "15分" },
+                { time: "21:00", tag: "Hotel", title: "返回飯店休息", icon: "fa-moon", map: "APA Hotel Shin Okachimachi" }
             ],
             2: [
-                { time: "08:00", tag: "Culture", title: "淺草寺參拜", icon: "fa-torii-gate", map: "淺草寺", desc: "早起參拜，購買應援順利御守。", img: "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?q=80&w=1000", lat: 35.714, lng: 139.796 },
-                { transit: "地鐵 銀座線", from: "淺草站", to: "溜池山王站", duration: "18 min", icon: "fa-subway" },
-                { transit: "地鐵 南北線", from: "溜池山王站", to: "後樂園站", duration: "8 min", icon: "fa-subway" },
-                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 澳洲", icon: "fa-baseball-bat-ball", map: "東京巨蛋", desc: "【WBC 小組賽】熱血開戰！地點：東京巨蛋。", img: "https://images.unsplash.com/photo-1516731415730-0c607149933a?q=80&w=1000", lat: 35.705, lng: 139.751 },
-                { transit: "地鐵 三田線", from: "水道橋站", to: "神保町站", duration: "2 min", icon: "fa-subway" },
-                { time: "16:00", tag: "Shop", title: "Mizuno 神保町旗艦店", icon: "fa-store", map: "Mizuno Tokyo", desc: "運動裝備補給。找尋 WBC 限定周邊商品。", img: "https://corp.mizuno.com/sites/corp/files/styles/og_image/public/2021-12/shop_tokyo_0.jpg", lat: 35.695, lng: 139.762 },
-                { transit: "地鐵 新宿線", from: "神保町站", to: "新宿站", duration: "9 min", icon: "fa-subway" },
-                { time: "17:30", tag: "Dinner", title: "新宿逛街 & 晚餐", icon: "fa-utensils", map: "新宿車站", desc: "感受世界最繁忙車站的魅力，尋找美味晚餐。", img: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?q=80&w=1000", lat: 35.689, lng: 139.700 }
+                { time: "08:30", tag: "Hotel", title: "從飯店出發", icon: "fa-sun", from: "APA 新御徒町" },
+                { transit: "地鐵 銀座線", from: "新御徒町站", to: "淺草站", duration: "10分" },
+                { time: "09:00", tag: "Culture", title: "淺草寺參拜", icon: "fa-torii-gate", map: "淺草寺", desc: "早起參拜，購買必勝御守。" },
+                { transit: "地鐵 南北線", from: "溜池山王站", to: "後樂園站", duration: "15分" },
+                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 澳洲", icon: "fa-baseball-bat-ball", map: "東京巨蛋", desc: "WBC 首戰！台灣英雄加油！" },
+                { transit: "地鐵 三田線", from: "水道橋站", to: "神保町站", duration: "3分" },
+                { time: "16:00", tag: "Shop", title: "Mizuno 神保町旗艦店", icon: "fa-store", map: "Mizuno Tokyo", desc: "購買 WBC 應援商品或專業運動裝備。" },
+                { transit: "地鐵 新宿線", from: "神保町站", to: "新宿站", duration: "10分" },
+                { time: "17:30", tag: "Dinner", title: "新宿逛街 & 晚餐", icon: "fa-utensils", map: "新宿東口", desc: "感受繁華夜晚。" },
+                { transit: "地鐵 大江戶線", from: "新宿西口站", to: "新御徒町站", duration: "18分" },
+                { time: "21:00", tag: "Hotel", title: "返回飯店休息", icon: "fa-hotel", map: "APA Hotel Shin Okachimachi" }
             ],
             3: [
-                { time: "08:00", tag: "Tour", title: "出發前往鎌倉", icon: "fa-train", map: "新御徒町站", desc: "從飯店出發，開始一日的古都與海岸之旅。", img: "https://images.unsplash.com/photo-1560264280-88b68371db39?q=80&w=1000", lat: 35.706, lng: 139.780 },
-                { transit: "地鐵 大江戶線", from: "新御徒町站", to: "新宿站", duration: "18 min", icon: "fa-subway" },
-                { transit: "JR 湘南新宿線", from: "新宿站", to: "鎌倉站", duration: "58 min", icon: "fa-train" },
-                { time: "09:30", tag: "Culture", title: "鶴岡八幡宮 & 小町通", icon: "fa-torii-gate", map: "鶴岡八幡宮", desc: "感受古都風情，順道在小町通買點輕食早午餐。", img: "https://www.japan-guide.com/g2/3102_01.jpg", lat: 35.326, lng: 139.556 },
-                { transit: "江之電", from: "鎌倉站", to: "長谷站", duration: "5 min", icon: "fa-train-tram" },
-                { time: "11:00", tag: "Culture", title: "長谷寺 & 鎌倉大佛", icon: "fa-vihara", map: "高德院 (鎌倉大佛)", desc: "參拜著名的國寶銅造阿彌陀如來坐像。", img: "https://www.japan-guide.com/g2/3100_01.jpg", lat: 35.316, lng: 139.536 },
-                { transit: "江之電", from: "長谷站", to: "鎌倉高校前站", duration: "12 min", icon: "fa-train-tram" },
-                { time: "12:15", tag: "Photo", title: "鎌倉高校前平交道", icon: "fa-camera", map: "鎌倉高校前駅", desc: "灌籃高手經典場景朝聖拍照。", img: "https://res.klook.com/image/upload/c_fill,w_750,h_500/q_80/w_80,x_15,y_15,g_south_west,l_klook_water/activities/xy0y5a8y0y5a8y0y5a8y.jpg", lat: 35.306, lng: 139.500 },
-                { transit: "江之電", from: "鎌倉高校前站", to: "江之島站", duration: "7 min", icon: "fa-train-tram" },
-                { transit: "步行", from: "江之島站", to: "江之島", duration: "15 min", icon: "fa-person-walking" },
-                { time: "13:15", tag: "Island", title: "江之島散策", icon: "fa-umbrella-beach", map: "江之島", desc: "步行過橋，參拜江島神社，體力許可可上展望燈塔 Sea Candle。", img: "https://www.discover-fujisawa.jp/wp-content/uploads/2018/03/enoshima_sea_candle-1.jpg", lat: 35.301, lng: 139.481 },
-                { transit: "小田急 浪漫特快", from: "片瀨江之島站", to: "新宿站", duration: "1h 10min", icon: "fa-train" },
-                { time: "19:00", tag: "WBC", title: "📺 轉播：台灣 vs 日本", icon: "fa-tv", map: "HUB Akihabara", desc: "地點建議：上野或秋葉原的運動酒吧 (HUB) 與球迷同樂！", img: "https://images.unsplash.com/photo-1543007630-9710e4a00a20?q=80&w=1000", lat: 35.698, lng: 139.771 }
+                { time: "08:00", tag: "Hotel", title: "飯店出發一日遊", icon: "fa-suitcase-rolling" },
+                { transit: "JR 湘南新宿線", from: "新宿站", to: "鎌倉站", duration: "60分" },
+                { time: "09:30", tag: "Tour", title: "鎌倉、江之島巡禮", icon: "fa-umbrella-beach", map: "鎌倉高校前", desc: "江之電、灌籃高手平交道、大佛。" },
+                { transit: "小田急 浪漫特快", from: "片瀨江之島", to: "新宿站", duration: "70分" },
+                { time: "19:00", tag: "WBC", title: "📺 觀戰：台灣 vs 日本", icon: "fa-tv", map: "HUB Akihabara", desc: "前往酒吧與大批球迷應援！" },
+                { time: "22:00", tag: "Hotel", title: "返回飯店休息", icon: "fa-moon" }
             ],
             4: [
-                { time: "08:30", tag: "Culture", title: "日枝神社參拜", icon: "fa-vihara", map: "日枝神社", desc: "欣賞著名的山王鳥居，為今日賽事祈求好運。", img: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1000", lat: 35.674, lng: 139.739 },
-                { transit: "地鐵 南北線", from: "溜池山王站", to: "後樂園站", duration: "8 min", icon: "fa-subway" },
-                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 捷克", icon: "fa-baseball-bat-ball", map: "東京巨蛋", desc: "再次進入巨蛋應援！", img: "https://images.unsplash.com/photo-1508344928928-7165b67de128?q=80&w=1000", lat: 35.705, lng: 139.751 },
-                { transit: "JR 山手線", from: "水道橋站", to: "原宿站", duration: "15 min", icon: "fa-train" },
-                { time: "16:00", tag: "Shopping", title: "原宿 & 澀谷逛街", icon: "fa-masks-theater", map: "Shibuya Crossing", desc: "朝聖澀谷十字路口，原宿逛潮流店。", img: "https://images.unsplash.com/photo-1542051841857-5f90071e7989?q=80&w=1000", lat: 35.659, lng: 139.700 }
+                { time: "08:30", tag: "Hotel", title: "飯店出發", icon: "fa-sun" },
+                { transit: "地鐵 千代田線", from: "新御徒町站", to: "國會議事堂前站", duration: "15分" },
+                { time: "09:00", tag: "Culture", title: "日枝神社參拜", icon: "fa-vihara", map: "日枝神社", desc: "欣賞山王鳥居。" },
+                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 捷克", icon: "fa-baseball-bat-ball", map: "東京巨蛋", desc: "再次進入巨蛋應援！" },
+                { time: "17:30", tag: "Shopping", title: "原宿 & 澀谷", icon: "fa-masks-theater", map: "澀谷", desc: "朝聖澀谷十字路口。" },
+                { time: "21:00", tag: "Hotel", title: "返回飯店休息", icon: "fa-hotel" }
             ],
             5: [
-                { time: "11:00", tag: "WBC", title: "抵達東京巨蛋", icon: "fa-location-dot", map: "東京巨蛋", desc: "寄放行李，準備進場。", img: "https://images.unsplash.com/photo-1516731415730-0c607149933a?q=80&w=1000", lat: 35.705, lng: 139.751 },
-                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 韓國", icon: "fa-fire", map: "東京巨蛋", desc: "【熱血大戰】經典台韓對決！應援聲不能輸！", img: "https://images.unsplash.com/photo-1516731415730-0c607149933a?q=80&w=1000", lat: 35.705, lng: 139.751 },
-                { transit: "JR 中央線", from: "水道橋站", to: "東京站", duration: "10 min", icon: "fa-train" },
-                { time: "18:30", tag: "Shinkansen", title: "新幹線回名古屋", icon: "fa-train-subway", map: "東京站", desc: "結束東京行程，返回名古屋。", img: "https://images.unsplash.com/photo-1542365887-11499f1ddee5?q=80&w=1000", lat: 35.681, lng: 139.767 },
-                { transit: "JR 新幹線 Nozomi", from: "東京站", to: "名古屋站", duration: "1h 40min", icon: "fa-bolt", note: "⚠️ 需預約特大行李位" },
-                { time: "20:30", tag: "Hotel", title: "APA 名古屋站前北 Check-in", icon: "fa-hotel", map: "APA Hotel Nagoya Ekimae Kita", desc: "抵達名古屋，入住飯店休息。", img: "https://www.apahotel.com/view_img.php?id=314", lat: 35.174, lng: 136.884 }
+                { time: "09:00", tag: "Hotel", title: "飯店 Checkout 寄行李", icon: "fa-suitcase" },
+                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 韓國", icon: "fa-fire", map: "東京巨蛋", desc: "經典台韓大戰！" },
+                { transit: "JR 中央線", from: "水道橋站", to: "東京站", duration: "10分" },
+                { transit: "新幹線 Nozomi", from: "東京站", to: "名古屋站", duration: "100分" },
+                { time: "20:30", tag: "Hotel", title: "APA 名古屋站前北 Check-in", icon: "fa-hotel", map: "APA Hotel Nagoya Ekimae Kita" }
             ],
             6: [
-                { time: "09:00", tag: "Culture", title: "名古屋城巡禮", icon: "fa-chess-rook", map: "名古屋城", desc: "看壯觀的金鯱與本丸御殿。", img: "https://images.unsplash.com/photo-1590559899731-a3828df9a954?q=80&w=1000", lat: 35.184, lng: 136.901 },
-                { transit: "地鐵 名城線", from: "市役所站", to: "上前津站", duration: "10 min", icon: "fa-subway" },
-                { time: "12:00", tag: "Market", title: "大須觀音與商店街", icon: "fa-store", map: "大須觀音", desc: "超好逛的平民商店街，有很多特色小吃。", img: "https://upload.wikimedia.org/wikipedia/commons/0/0e/Osu_Kannon_Nagoya_01.JPG", lat: 35.159, lng: 136.899 },
-                { transit: "地鐵 名城線", from: "上前津站", to: "榮站", duration: "5 min", icon: "fa-subway" },
-                { time: "16:00", tag: "Night", title: "榮商圈 & 綠洲 21", icon: "fa-tower-observation", map: "Oasis 21", desc: "登上電視塔或綠洲 21 看夜景，晚餐享用味噌豬排。", img: "https://images.unsplash.com/photo-1610459341400-349071c356f9?q=80&w=1000", lat: 35.171, lng: 136.909 }
+                { time: "09:00", tag: "Hotel", title: "名古屋飯店出發", icon: "fa-sun" },
+                { transit: "地鐵 名城線", from: "名古屋站", to: "市役所站", duration: "12分" },
+                { time: "09:30", tag: "Sightseeing", title: "名古屋城巡禮", icon: "fa-chess-rook", map: "名古屋城", desc: "看壯觀金鯱。" },
+                { time: "12:00", tag: "Market", title: "大須觀音商店街", icon: "fa-store", map: "大須觀音", desc: "名古屋特色小吃補給。" },
+                { time: "16:00", tag: "Night", title: "榮商圈 & 綠洲 21", icon: "fa-tower-observation", map: "Oasis 21", desc: "看夜景享用味噌豬排晚餐。" },
+                { time: "20:30", tag: "Hotel", title: "返回飯店休息", icon: "fa-hotel" }
             ],
             7: [
-                { time: "07:30", tag: "Transit", title: "前往中部機場", icon: "fa-train", map: "名鐵名古屋站", desc: "搭乘早班車前往機場。", img: "https://upload.wikimedia.org/wikipedia/commons/2/29/Meitetsu_2000_series_U-SKY.jpg", lat: 35.170, lng: 136.881 },
-                { transit: "μ-sky 特急", from: "名鐵名古屋站", to: "中部國際機場站", duration: "28 min", icon: "fa-train" },
-                { time: "09:50", tag: "Flight", title: "CI151 飛往桃園", icon: "fa-plane-arrival", map: "中部國際機場", desc: "結束這趟熱血應援之旅。下次再戰！", img: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1000", lat: 25.079, lng: 121.234 }
+                { time: "07:00", tag: "Hotel", title: "飯店 Checkout 出發", icon: "fa-plane-departure" },
+                { transit: "μ-sky 特急", from: "名鐵名古屋站", to: "中部機場站", duration: "28分" },
+                { time: "09:50", tag: "Flight", title: "CI151 飛往桃園", icon: "fa-plane-arrival", map: "中部國際機場", desc: "結束熱血之旅。" }
             ]
         };
-
-        // --- 渲染功能 ---
-        function initApp() { renderDatePicker(); renderItinerary(); }
 
         function renderDatePicker() {
             const picker = document.getElementById('date-picker-container');
@@ -205,9 +172,15 @@
                 date.setDate(date.getDate() + i);
                 const dayNum = i + 1;
                 const div = document.createElement('div');
-                div.className = `date-item flex flex-col items-center cursor-pointer w-full ${dayNum === currentDay && activeTab === 'itinerary' ? 'active-date' : ''}`;
-                div.onclick = () => { currentDay = dayNum; activeTab = 'itinerary'; renderDatePicker(); renderItinerary(); };
-                div.innerHTML = `<span class="text-[8px] font-bold text-gray-400 uppercase">MAR</span><span class="text-xl date-num font-serif leading-none">${date.getDate()}</span><div class="date-dot"></div><span class="text-[8px] font-bold text-gray-500">${daysOfWeek[date.getDay()]}</span>`;
+                div.className = `date-item cursor-pointer text-center ${dayNum === currentDay ? 'active-date' : ''}`;
+                div.onclick = () => { currentDay = dayNum; renderDatePicker(); renderItinerary(); };
+                div.innerHTML = `
+                    <div class="date-box p-1">
+                        <div class="text-[7px] uppercase opacity-70">Mar</div>
+                        <div class="text-lg font-bold date-num">${date.getDate()}</div>
+                        <div class="text-[7px] opacity-70">${daysOfWeek[date.getDay()]}</div>
+                    </div>
+                `;
                 picker.appendChild(div);
             }
         }
@@ -217,47 +190,33 @@
             container.innerHTML = '';
             let html = '<div class="relative"><div class="timeline-line"></div>';
             
-            if (!tripData[currentDay]) {
-                html += '<p class="text-center text-gray-400 py-10">尚無詳細行程</p>';
-            } else {
-                tripData[currentDay].forEach(item => {
-                    if (item.transit) {
-                        // 轉乘資訊區塊 (增加起訖點)
-                        html += `
-                        <div class="transit-step">
-                            <div class="transit-badge">
-                                <i class="fas ${item.icon}"></i> ${item.transit} 
-                                <span class="mx-1 text-pink-500">|</span> 
-                                <span>${item.from} <i class="fas fa-arrow-right text-[8px] mx-0.5"></i> ${item.to}</span>
-                                <span class="mx-1 text-pink-500">|</span> 
-                                <i class="far fa-clock"></i> ${item.duration}
-                                ${item.note ? `<br><span class="text-yellow-400 text-[8px] font-bold">${item.note}</span>` : ''}
+            tripData[currentDay].forEach(item => {
+                if (item.transit) {
+                    html += `
+                    <div class="transit-row">
+                        <div class="transit-badge">
+                            <i class="fas ${item.icon || 'fa-train'}"></i>
+                            <span>${item.from} → ${item.to}</span>
+                            <span class="mx-1">|</span>
+                            <span>${item.duration}</span>
+                            ${item.note ? `<br><span class="text-orange-400 text-[8px]">${item.note}</span>` : ''}
+                        </div>
+                    </div>`;
+                } else {
+                    html += `
+                    <div class="relative mb-6 pl-10">
+                        <div class="timeline-dot"></div>
+                        <div class="itinerary-card p-4 transition-transform active:scale-95" onclick="showModal('${encodeURIComponent(JSON.stringify(item))}')">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-[10px] font-bold text-blue-700 tracking-widest uppercase">${item.tag}</span>
+                                <span class="text-[11px] font-bold text-gray-400">${item.time}</span>
                             </div>
-                        </div>`;
-                    } else {
-                        // 景點字卡區塊
-                        html += `
-                        <div class="relative mb-6 pl-10">
-                            <div class="timeline-dot"></div>
-                            <div class="flex items-baseline mb-2">
-                                <span class="text-xl font-serif font-bold text-white mr-3">${item.time}</span>
-                                <div class="h-[1px] flex-1 bg-white/10"></div>
-                            </div>
-                            <div class="itinerary-card p-4 active:scale-[0.98] transition-all" onclick="showModal('${encodeURIComponent(JSON.stringify(item))}')">
-                                <div class="flex items-center justify-between mb-1.5">
-                                    <div class="flex items-center">
-                                        <i class="fas ${item.icon} mr-2 text-cyan-400 text-xs"></i>
-                                        <span class="text-[9px] font-bold text-cyan-400 uppercase tracking-widest">${item.tag}</span>
-                                    </div>
-                                    ${item.tag === 'WBC' ? '<span class="bg-gradient-to-r from-pink-600 to-red-600 text-white text-[8px] px-2 py-0.5 rounded font-black shadow-sm">WBC GAME</span>' : ''}
-                                </div>
-                                <h3 class="text-base font-bold text-white leading-tight">${item.title}</h3>
-                                <p class="text-[11px] text-gray-400 mt-2 line-clamp-1">${item.desc}</p>
-                            </div>
-                        </div>`;
-                    }
-                });
-            }
+                            <h3 class="text-base font-bold">${item.title}</h3>
+                            ${item.desc ? `<p class="text-[10px] text-gray-500 mt-1 line-clamp-1">${item.desc}</p>` : ''}
+                        </div>
+                    </div>`;
+                }
+            });
             container.innerHTML = html + '</div><div id="map-container"></div>';
             renderDailyMap();
         }
@@ -265,57 +224,25 @@
         function renderDailyMap() {
             if (map) map.remove();
             map = L.map('map-container', { zoomControl: false, attributionControl: false });
-            // 使用深色地圖圖層
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
             const markers = [];
-            if (tripData[currentDay]) {
-                tripData[currentDay].forEach((p) => { 
-                    if (p.lat && p.lng) { 
-                        // 使用自定義顏色的標記
-                        const markerColor = p.tag === 'WBC' ? '#E4002B' : (p.tag === 'Hotel' ? '#FFD200' : '#00AEEF');
-                        const customIcon = L.divIcon({
-                            className: 'custom-div-icon',
-                            html: `<div style="background-color: ${markerColor}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px ${markerColor};"></div>`,
-                            iconSize: [12, 12],
-                            iconAnchor: [6, 6]
-                        });
-                        L.marker([p.lat, p.lng], {icon: customIcon}).addTo(map); 
-                        markers.push([p.lat, p.lng]); 
-                    } 
-                });
-            }
-            if (markers.length > 0) map.fitBounds(L.polyline(markers).getBounds(), { padding: [40, 40] });
-        }
-
-        function toggleView(view) {
-            activeTab = view;
-            const lt = document.getElementById('ledger-toggle');
-            const ct = document.getElementById('checklist-toggle');
-            lt.className = `flex flex-col items-center transition-all ${activeTab === 'ledger' ? 'nav-btn-active' : 'text-gray-400'}`;
-            ct.className = `flex flex-col items-center transition-all ${activeTab === 'checklist' ? 'nav-btn-active' : 'text-gray-400'}`;
-            
-            const container = document.getElementById('content');
-            if (view === 'ledger') container.innerHTML = '<div class="p-10 text-center text-gray-500"><i class="fas fa-wallet text-4xl mb-4 opacity-30"></i><p>記帳本開發中...</p></div>';
-            else if (view === 'checklist') container.innerHTML = '<div class="p-10 text-center text-gray-500"><i class="fas fa-toolbox text-4xl mb-4 opacity-30"></i><p>應援助手準備中...</p></div>';
-            else renderItinerary();
+            tripData[currentDay].forEach(p => { 
+                if (p.lat && p.lng) { 
+                    L.marker([p.lat, p.lng]).addTo(map); 
+                    markers.push([p.lat, p.lng]); 
+                } 
+            });
+            if (markers.length > 0) map.fitBounds(L.polyline(markers).getBounds(), { padding: [30, 30] });
         }
 
         function showModal(itemStr) {
             const item = JSON.parse(decodeURIComponent(itemStr));
             const modal = document.getElementById('detail-modal');
-            document.getElementById('modal-img').src = item.img;
+            document.getElementById('modal-img').src = item.img || "https://images.unsplash.com/photo-1542365887-11499f1ddee5?q=80&w=1000";
             document.getElementById('modal-tag').textContent = item.tag;
             document.getElementById('modal-title').textContent = item.title;
-            document.getElementById('modal-desc').textContent = item.desc;
-            
-            const tc = document.getElementById('modal-transport-container');
-            if (item.transport) {
-                document.getElementById('modal-transport').innerHTML = `<i class="fas ${item.icon} mr-1"></i> <b>${item.transit}</b><br><span class="text-pink-400">${item.from} <i class="fas fa-arrow-right text-[8px]"></i> ${item.to}</span> (${item.duration})${item.note ? `<br><span class="text-yellow-400">${item.note}</span>` : ''}`;
-                tc.classList.remove('hidden');
-            } else tc.classList.add('hidden');
-            
-            document.getElementById('modal-google-link').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.map)}`;
-            
+            document.getElementById('modal-desc').textContent = item.desc || "從飯店出發/返回，準備開始新的一天或休息。";
+            document.getElementById('modal-google-link').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.map || item.title)}`;
             modal.classList.remove('hidden');
             setTimeout(() => { modal.classList.remove('opacity-0'); modal.querySelector('div').classList.remove('translate-y-full'); }, 10);
         }
@@ -325,6 +252,11 @@
             modal.classList.add('opacity-0');
             modal.querySelector('div').classList.add('translate-y-full');
             setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        function toggleView(view) {
+            alert(view + " 模組載入中...");
+            if (view === 'itinerary') renderItinerary();
         }
 
         window.onload = initApp;
