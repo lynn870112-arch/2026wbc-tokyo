@@ -16,11 +16,9 @@
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #fcfaf2; color: #4a4a4a; -webkit-tap-highlight-color: transparent; }
         h2, .font-serif { font-family: 'Noto Serif TC', serif; }
         
-        /* 頁面視圖控制 */
         .view-section { display: none; }
         .view-section.active { display: block; }
 
-        /* 七天攤開選單 */
         .date-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; padding: 12px; background: #fff; border-bottom: 1px solid #eee; }
         .date-item { opacity: 0.3; transition: all 0.3s ease; text-align: center; cursor: pointer; }
         .active-date { opacity: 1 !important; transform: translateY(-2px); }
@@ -28,65 +26,44 @@
         .date-dot { width: 4px; height: 4px; border-radius: 50%; background-color: transparent; margin: 4px auto 0; }
         .active-date .date-dot { background-color: #e4002b; }
 
-        /* 時間軸線與裝飾 */
-        .timeline-wrapper { position: relative; width: 100%; }
         .timeline-line { position: absolute; left: 19px; top: 10px; bottom: 20px; width: 2px; background-color: #e2e8f0; z-index: 0; }
         .timeline-dot { z-index: 10; background-color: #fff; border: 2px solid #0035ad; width: 12px; height: 12px; border-radius: 50%; position: absolute; left: 14px; top: 8px; }
 
-        /* 轉乘步序標籤 (增加路線資訊) */
         .transit-step { position: relative; margin-left: 1.5rem; padding: 0.6rem 1rem; border-left: 2px dashed #cbd5e0; margin-top: -0.5rem; margin-bottom: 0.5rem; }
-        .transit-badge { background-color: #f1f5f9; color: #475569; font-size: 10px; font-weight: 700; padding: 5px 12px; border-radius: 8px; display: inline-flex; flex-direction: column; gap: 2px; border: 1px solid #e2e8f0; width: 100%; max-width: 280px; }
+        .transit-badge { background-color: #f8fafc; color: #475569; font-size: 10px; font-weight: 700; padding: 6px 12px; border-radius: 8px; display: inline-flex; flex-direction: column; gap: 2px; border: 1px solid #e2e8f0; width: 100%; max-width: 300px; }
 
-        /* 淺色行程字卡 (飾條顏色動態控制) */
         .itinerary-card { background: #ffffff; border-radius: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #1a202c; border: 1px solid #f0f0f0; }
         
-        /* 底部選單列 */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; z-index: 40; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
-        .nav-btn { color: #94a3b8; font-size: 20px; transition: 0.3s; }
+        .nav-btn { color: #94a3b8; transition: 0.3s; }
         .nav-btn.active { color: #e4002b; }
     </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
 
-    <header class="bg-white pt-4 sticky top-0 z-30 shadow-sm flex-shrink-0">
-        <div class="text-center mb-1 px-5">
-            <h1 class="text-[8px] tracking-[0.3em] text-gray-400 font-bold uppercase">WBC 2026 Tokyo / Nagoya</h1>
-            <h2 class="text-lg font-bold text-gray-800">⚾ 應援之旅攻略</h2>
-        </div>
+    <header class="bg-white pt-4 sticky top-0 z-30 shadow-sm flex-shrink-0 text-center">
+        <h1 class="text-[8px] tracking-[0.3em] text-gray-400 font-bold uppercase">WBC 2026 Tokyo / Nagoya</h1>
+        <h2 class="text-lg font-bold text-gray-800">⚾ 應援之旅攻略</h2>
         <div id="date-picker-container" class="date-grid"></div>
     </header>
 
     <main class="flex-1 overflow-y-auto p-5 pb-32">
         <section id="section-itinerary" class="view-section active"></section>
         <section id="section-checklist" class="view-section">
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-orange-50 mb-4">
-                <h3 class="text-sm font-bold text-red-500 mb-4"><i class="fas fa-check-double mr-2"></i> 應援必備物品</h3>
-                <div class="space-y-3 text-sm">
-                    <label class="flex items-center gap-3"><input type="checkbox" class="w-5 h-5 accent-red-600"> 台灣英雄球衣 / 應援 T</label>
-                    <label class="flex items-center gap-3"><input type="checkbox" class="w-5 h-5 accent-red-600"> 國旗 / 加油手幅</label>
-                    <label class="flex items-center gap-3"><input type="checkbox" class="w-5 h-5 accent-red-600"> WBC 東京巨蛋電子票券</label>
-                    <label class="flex items-center gap-3"><input type="checkbox" class="w-5 h-5 accent-red-600"> 行動電源 (巨蛋拍照很噴電)</label>
-                </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-orange-50">
+                <h3 class="font-bold text-red-500 mb-4">應援必備</h3>
+                <p class="text-sm text-gray-500">功能開發中，目前僅供參考...</p>
             </div>
         </section>
         <section id="section-ledger" class="view-section">
-            <div class="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 text-center text-gray-400">
-                <i class="fas fa-receipt text-4xl mb-4 opacity-20"></i>
-                <p>記帳模組同步中...</p>
-            </div>
+            <div class="p-10 text-center text-gray-400">記帳系統同步中...</div>
         </section>
     </main>
 
     <nav class="bottom-nav">
-        <button onclick="toggleView('checklist')" id="btn-checklist" class="nav-btn flex flex-col items-center">
-            <i class="fas fa-toolbox"></i><span class="text-[10px] font-bold mt-1">助手</span>
-        </button>
-        <button onclick="toggleView('itinerary')" id="btn-itinerary" class="nav-btn active flex flex-col items-center">
-            <i class="fas fa-calendar-day"></i><span class="text-[10px] font-bold mt-1">行程</span>
-        </button>
-        <button onclick="toggleView('ledger')" id="btn-ledger" class="nav-btn flex flex-col items-center">
-            <i class="fas fa-wallet"></i><span class="text-[10px] font-bold mt-1">帳本</span>
-        </button>
+        <button onclick="toggleView('checklist')" id="btn-checklist" class="nav-btn flex flex-col items-center"><i class="fas fa-toolbox"></i><span class="text-[10px] font-bold mt-1">助手</span></button>
+        <button onclick="toggleView('itinerary')" id="btn-itinerary" class="nav-btn active flex flex-col items-center"><i class="fas fa-calendar-day"></i><span class="text-[10px] font-bold mt-1">行程</span></button>
+        <button onclick="toggleView('ledger')" id="btn-ledger" class="nav-btn flex flex-col items-center"><i class="fas fa-wallet"></i><span class="text-[10px] font-bold mt-1">帳本</span></button>
     </nav>
 
     <div id="detail-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end justify-center transition-opacity duration-300 opacity-0">
@@ -96,10 +73,10 @@
                 <button onclick="closeModal()" class="absolute top-4 right-4 bg-black/40 text-white rounded-full p-2"><i class="fas fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto">
-                <span id="modal-tag" class="text-[10px] font-bold tracking-widest uppercase bg-blue-700 text-white px-2 py-1 rounded mb-2 inline-block"></span>
-                <h3 id="modal-title" class="text-2xl font-bold mb-2"></h3>
+                <span id="modal-tag" class="text-[10px] font-bold bg-blue-700 text-white px-2 py-1 rounded mb-2 inline-block"></span>
+                <h3 id="modal-title" class="text-2xl font-bold mb-2 leading-tight"></h3>
                 <p id="modal-desc" class="text-gray-600 leading-relaxed text-sm mb-6 whitespace-pre-line"></p>
-                <a id="modal-google-link" href="#" target="_blank" class="w-full bg-black text-white py-4 rounded-xl flex items-center justify-center font-bold text-sm"><i class="fab fa-google mr-2 text-yellow-400"></i> Google Maps 導航</a>
+                <a id="modal-google-link" href="#" target="_blank" class="w-full bg-black text-white py-4 rounded-xl flex items-center justify-center font-bold text-sm"><i class="fab fa-google mr-2 text-yellow-400"></i> Google Maps</a>
             </div>
         </div>
     </div>
@@ -109,82 +86,85 @@
         const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
         let currentDay = 1;
         let map = null;
-
-        // 色系循環 (飾條變色)
-        const accentColors = ['#0054A6', '#E40046', '#009B4D', '#F58220'];
+        const colors = ['#0054A6', '#E40046', '#009B4D', '#F58220'];
 
         const tripData = {
             1: [
-                { time: "07:35", tag: "Flight", title: "桃園機場 (CI154) 出發", icon: "fa-plane", desc: "開啟 2026 WBC 應援之旅。" },
-                { transit: "名鐵 μ-sky 特急 (全指定席)", from: "中部國際機場站", to: "名鐵名古屋站", duration: "28 min" },
-                { time: "11:45", tag: "Transit", title: "抵達名古屋站", icon: "fa-location-dot", desc: "準備轉乘新幹線前往東京。" },
-                { transit: "JR 新幹線 Nozomi (希望號)", from: "名古屋站", to: "東京站", duration: "100 min", note: "⚠️ 務必預約特大行李位" },
+                { time: "07:35", tag: "Flight", title: "桃園機場 CI154 出發", icon: "fa-plane" },
+                { transit: "中華航空 CI154", from: "TPE", to: "NGO", duration: "3h 30min" },
+                { time: "11:05", tag: "Arrival", title: "抵達中部國際機場", icon: "fa-plane-arrival", map: "Chubu Centrair International Airport" },
+                { transit: "名鐵 μ-sky 特急", from: "中部機場站", to: "名鐵名古屋站", duration: "28 min" },
+                { time: "12:45", tag: "Arrival", title: "抵達名古屋車站", icon: "fa-location-dot", map: "Nagoya Station" },
+                { transit: "JR 新幹線 Nozomi", from: "名古屋站", to: "東京站", duration: "100 min", note: "⚠️ 預約特大行李位" },
                 { transit: "JR 山手線 / 京濱東北線", from: "東京站", to: "御徒町站", duration: "6 min" },
-                { time: "17:00", tag: "Hotel", title: "APA 新御徒町 Check-in", icon: "fa-hotel", map: "APA Hotel Shin Okachimachi", desc: "放下行李，準備首晚補給。" },
-                { time: "18:00", tag: "Night", title: "阿美橫町 & 秋葉原", icon: "fa-bag-shopping", desc: "應援物資與美食補給。" },
-                { time: "21:30", tag: "Hotel", title: "返回飯店休息", icon: "fa-moon" }
+                { time: "17:00", tag: "Hotel", title: "APA新御徒町", icon: "fa-hotel", map: "APA Hotel Shin Okachimachi" },
+                { transit: "步行", from: "飯店", to: "阿美橫町", duration: "12 min" },
+                { time: "17:30", tag: "Night", title: "阿美橫町 & 秋葉原", icon: "fa-bag-shopping", map: "Akihabara" },
+                { transit: "都營大江戶線 / 步行", from: "秋葉原", to: "新御徒町站", duration: "10 min" },
+                { time: "21:30", tag: "Hotel", title: "APA新御徒町", icon: "fa-moon" }
             ],
             2: [
-                { time: "08:00", tag: "Hotel", title: "新御徒町飯店出發", icon: "fa-sun" },
-                { transit: "都營大江戶線 → 淺草線", from: "新御徒町站", to: "淺草站 (藏前轉乘)", duration: "12 min" },
-                { time: "09:00", tag: "Culture", title: "淺草寺參拜", icon: "fa-torii-gate", desc: "求必勝御守，雷門合照。" },
-                { transit: "地鐵 銀座線 → 南北線", from: "淺草站", to: "後樂園站 (溜池山王轉)", duration: "30 min" },
-                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 澳洲", icon: "fa-baseball-bat-ball", desc: "【WBC 首戰】東京巨蛋應援！" },
-                { transit: "都營三田線", from: "水道橋站", to: "神保町站", duration: "2 min" },
-                { time: "16:00", tag: "Shop", title: "Mizuno 神保町旗艦店", icon: "fa-store", desc: "專業運動用品採買。" },
-                { transit: "都營新宿線", from: "神保町站", to: "新宿站", duration: "10 min" },
-                { time: "17:30", tag: "Dinner", title: "新宿逛街 & 晚餐", icon: "fa-utensils", desc: "新宿東口 / 哥吉拉景點。" },
-                { transit: "都營大江戶線", from: "新宿西口站", to: "新御徒町站", duration: "18 min" },
-                { time: "21:30", tag: "Hotel", title: "返回飯店休息", icon: "fa-moon" }
+                { time: "08:00", tag: "Hotel", title: "APA新御徒町", icon: "fa-sun" },
+                { transit: "都營大江戶線 → 淺草線 (藏前轉乘)", from: "新御徒町", to: "淺草", duration: "12 min" },
+                { time: "09:00", tag: "Culture", title: "淺草寺參拜", icon: "fa-torii-gate", map: "Senso-ji" },
+                { transit: "地鐵 銀座線 → 南北線 (溜池山王轉)", from: "淺草", to: "後樂園", duration: "30 min" },
+                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 澳洲", icon: "fa-baseball-bat-ball", map: "Tokyo Dome" },
+                { transit: "都營三田線", from: "水道橋", to: "神保町", duration: "3 min" },
+                { time: "16:00", tag: "Shop", title: "Mizuno 旗艦店", icon: "fa-store", map: "Mizuno Tokyo" },
+                { transit: "都營新宿線", from: "神保町", to: "新宿", duration: "10 min" },
+                { time: "17:30", tag: "Dinner", title: "新宿逛街 & 晚餐", icon: "fa-utensils", map: "Shinjuku" },
+                { transit: "都營大江戶線", from: "新宿西口", to: "新御徒町", duration: "18 min" },
+                { time: "21:30", tag: "Hotel", title: "APA新御徒町", icon: "fa-moon" }
             ],
             3: [
-                { time: "08:00", tag: "Hotel", title: "飯店出發一日遊", icon: "fa-sun" },
-                { transit: "JR 湘南新宿線", from: "新宿站", to: "大船站", duration: "45 min" },
+                { time: "08:00", tag: "Hotel", title: "APA新御徒町", icon: "fa-sun" },
+                { transit: "都營大江戶線 → JR 上野東京線", from: "新御徒町 → 上野", to: "大船", duration: "60 min" },
                 { transit: "湘南單軌電車 (懸吊式)", from: "大船站", to: "湘南江之島站", duration: "14 min" },
-                { time: "10:00", tag: "Tour", title: "江之島散策", icon: "fa-umbrella-beach", desc: "江島神社、展望塔。" },
+                { time: "10:00", tag: "Tour", title: "江之島散策", icon: "fa-umbrella-beach", map: "Enoshima" },
                 { transit: "江之電", from: "江之島站", to: "鎌倉高校前站", duration: "8 min" },
-                { time: "12:15", tag: "Photo", title: "高校前平交道朝聖", icon: "fa-camera", desc: "灌籃高手經典場景。" },
+                { time: "12:15", tag: "Photo", title: "高校前平交道朝聖", icon: "fa-camera", map: "Kamakurakoko-Mae Station" },
                 { transit: "江之電", from: "高校前站", to: "長谷站", duration: "10 min" },
-                { time: "13:30", tag: "Culture", title: "鎌倉大佛 (高德院)", icon: "fa-vihara", desc: "巨大銅像參拜。" },
+                { time: "13:30", tag: "Culture", title: "鎌倉大佛", icon: "fa-vihara", map: "Kotoku-in" },
                 { transit: "江之電", from: "長谷站", to: "鎌倉站", duration: "5 min" },
-                { time: "14:30", tag: "Culture", title: "小町通 & 八幡宮", icon: "fa-torii-gate", desc: "古都街道漫步。" },
-                { transit: "JR 湘南新宿線", from: "鎌倉站", to: "新宿站", duration: "60 min" },
-                { time: "19:00", tag: "WBC", title: "📺 觀戰：台灣 vs 日本", icon: "fa-tv", desc: "在 HUB 或運動酒吧熱血看球！" },
-                { time: "22:00", tag: "Hotel", title: "返回飯店休息", icon: "fa-moon" }
+                { time: "14:30", tag: "Culture", title: "小町通 & 八幡宮", icon: "fa-torii-gate", map: "Tsurugaoka Hachimangu" },
+                { transit: "JR 湘南新宿線 (直通)", from: "鎌倉站", to: "新宿站", duration: "60 min" },
+                { time: "19:00", tag: "WBC", title: "📺 轉播：台灣 vs 日本", icon: "fa-tv", map: "HUB Akihabara" },
+                { transit: "都營大江戶線 / 步行", from: "上野/秋葉原", to: "飯店", duration: "10 min" },
+                { time: "22:00", tag: "Hotel", title: "APA新御徒町", icon: "fa-moon" }
             ],
             4: [
-                { time: "08:30", tag: "Hotel", title: "飯店出發", icon: "fa-sun" },
-                { transit: "都營大江戶線 → 南北線", from: "新御徒町站", to: "溜池山王站", duration: "20 min" },
-                { time: "09:00", tag: "Culture", title: "日枝神社參拜", icon: "fa-vihara", desc: "欣賞壯觀的山王鳥居。" },
-                { transit: "東京地下鐵 南北線", from: "溜池山王站", to: "後樂園站", duration: "15 min" },
-                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 捷克", icon: "fa-baseball-bat-ball", desc: "東京巨蛋應援！" },
-                { transit: "JR 山手線", from: "水道橋站", to: "原宿站", duration: "15 min" },
-                { time: "16:00", tag: "Shopping", title: "原宿 & 澀谷", icon: "fa-masks-theater", desc: "澀谷十字路口、潮流店。" },
-                { transit: "地鐵 銀座線", from: "澀谷站", to: "上野廣小路站", duration: "25 min" },
-                { time: "21:30", tag: "Hotel", title: "返回飯店休息", icon: "fa-hotel" }
+                { time: "08:30", tag: "Hotel", title: "APA新御徒町", icon: "fa-sun" },
+                { transit: "都營大江戶線 → 南北線", from: "新御徒町 → 溜池山王", to: "後樂園", duration: "35 min" },
+                { time: "09:00", tag: "Culture", title: "日枝神社參拜", icon: "fa-vihara", map: "Hie Shrine" },
+                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 捷克", icon: "fa-baseball-bat-ball", map: "Tokyo Dome" },
+                { transit: "JR 山手線", from: "水道橋", to: "原宿", duration: "15 min" },
+                { time: "16:00", tag: "Shopping", title: "原宿 & 澀谷", icon: "fa-masks-theater", map: "Shibuya Crossing" },
+                { transit: "地鐵 銀座線", from: "澀谷", to: "上野廣小路", duration: "25 min" },
+                { time: "21:30", tag: "Hotel", title: "APA新御徒町", icon: "fa-hotel" }
             ],
             5: [
-                { time: "09:00", tag: "Hotel", title: "飯店 Checkout 寄行李", icon: "fa-suitcase" },
-                { transit: "都營大江戶線", from: "新御徒町站", to: "春日站", duration: "5 min" },
-                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 韓國", icon: "fa-fire", desc: "經典對決！巨蛋戰鼓！" },
-                { transit: "JR 中央線 (快速)", from: "水道橋站", to: "東京站", duration: "10 min" },
-                { transit: "JR 新幹線 Nozomi", from: "東京站", to: "名古屋站", duration: "100 min" },
-                { time: "20:30", tag: "Hotel", title: "APA 名古屋站前北 Check-in", icon: "fa-hotel", map: "APA Hotel Nagoya Ekimae Kita" }
+                { time: "09:00", tag: "Hotel", title: "APA新御徒町 (寄行李)", icon: "fa-suitcase" },
+                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 韓國", icon: "fa-fire", map: "Tokyo Dome" },
+                { transit: "JR 中央線 → 新幹線", from: "水道橋 → 東京", to: "名古屋", duration: "120 min" },
+                { transit: "步行", from: "名古屋站", to: "飯店", duration: "8 min" },
+                { time: "20:30", tag: "Hotel", title: "APA 名古屋站前北", icon: "fa-hotel", map: "APA Hotel Nagoya Ekimae Kita" }
             ],
             6: [
-                { time: "09:00", tag: "Hotel", title: "名古屋飯店出發", icon: "fa-sun" },
-                { transit: "地鐵 名城線", from: "名古屋站", to: "市役所站", duration: "12 min" },
-                { time: "09:30", tag: "Sightseeing", title: "名古屋城巡禮", icon: "fa-chess-rook", desc: "看本丸御殿、金鯱。" },
-                { transit: "地鐵 名城線", from: "市役所站", to: "上前津站", duration: "10 min" },
-                { time: "12:00", tag: "Market", title: "大須觀音商店街", icon: "fa-store", desc: "特色小吃、老街氛圍。" },
-                { transit: "地鐵 名城線", from: "上前津站", to: "榮站", duration: "5 min" },
-                { time: "16:00", tag: "Night", title: "榮商圈 & 綠洲 21", icon: "fa-tower-observation", desc: "電視塔夜景、美食晚餐。" },
-                { time: "21:00", tag: "Hotel", title: "返回飯店休息", icon: "fa-hotel" }
+                { time: "09:00", tag: "Hotel", title: "APA 名古屋站前北", icon: "fa-sun" },
+                { transit: "地鐵 名城線", from: "名古屋站", to: "名古屋城", duration: "15 min" },
+                { time: "09:30", tag: "Sightseeing", title: "名古屋城巡禮", icon: "fa-chess-rook", map: "Nagoya Castle" },
+                { transit: "地鐵 名城線", from: "市役所", to: "上前津", duration: "10 min" },
+                { time: "12:00", tag: "Market", title: "大須觀音商店街", icon: "fa-store", map: "Osu Kannon" },
+                { transit: "地鐵 名城線", from: "上前津", to: "榮", duration: "5 min" },
+                { time: "16:00", tag: "Night", title: "榮商圈 & 綠洲 21", icon: "fa-tower-observation", map: "Oasis 21" },
+                { transit: "東山線 / 櫻通線", from: "榮站", to: "名古屋站", duration: "5 min" },
+                { transit: "步行", from: "名古屋站", to: "飯店", duration: "8 min" },
+                { time: "21:00", tag: "Hotel", title: "APA 名古屋站前北", icon: "fa-moon" }
             ],
             7: [
-                { time: "07:00", tag: "Hotel", title: "飯店 Checkout 前往機場", icon: "fa-plane-departure" },
-                { transit: "名鐵 μ-sky 特急", from: "名鐵名古屋站", to: "中部國際機場站", duration: "28 min" },
-                { time: "09:50", tag: "Flight", title: "CI151 飛往桃園", icon: "fa-plane-arrival", desc: "旅程圓滿結束。" }
+                { time: "07:00", tag: "Hotel", title: "APA 名古屋站前北", icon: "fa-plane-departure" },
+                { transit: "名鐵 μ-sky 特急", from: "名鐵名古屋", to: "中部機場", duration: "28 min" },
+                { time: "09:50", tag: "Flight", title: "CI151 飛往桃園", icon: "fa-plane-arrival", map: "Chubu Centrair" }
             ]
         };
 
@@ -197,8 +177,8 @@
                 const dayNum = i + 1;
                 const div = document.createElement('div');
                 div.className = `date-item ${dayNum === currentDay ? 'active-date' : ''}`;
-                div.onclick = () => { currentDay = dayNum; toggleView('itinerary'); };
-                div.innerHTML = `<div class="text-[7px] uppercase opacity-50">Mar</div><div class="text-lg font-bold date-num leading-tight">${date.getDate()}</div><div class="date-dot"></div><div class="text-[7px] opacity-50">${daysOfWeek[date.getDay()]}</div>`;
+                div.onclick = () => { currentDay = dayNum; renderDatePicker(); renderItinerary(); };
+                div.innerHTML = `<div class="text-[7px] uppercase opacity-50">Mar</div><div class="text-base font-bold date-num leading-tight">${date.getDate()}</div><div class="date-dot"></div><div class="text-[7px] opacity-50">${daysOfWeek[date.getDay()]}</div>`;
                 picker.appendChild(div);
             }
         }
@@ -206,35 +186,13 @@
         function renderItinerary() {
             const container = document.getElementById('section-itinerary');
             container.innerHTML = '';
-            let html = '<div class="timeline-wrapper"><div class="timeline-line"></div>';
-            
-            tripData[currentDay].forEach((item, index) => {
-                const accentColor = accentColors[index % accentColors.length];
+            let html = '<div class="relative"><div class="timeline-line"></div>';
+            tripData[currentDay].forEach((item, idx) => {
+                const color = colors[idx % colors.length];
                 if (item.transit) {
-                    html += `
-                    <div class="transit-step">
-                        <div class="transit-badge">
-                            <span class="text-blue-600"><i class="fas fa-train mr-1"></i> ${item.transit}</span>
-                            <span class="text-gray-400">${item.from} → ${item.to} (${item.duration})</span>
-                            ${item.note ? `<span class="text-red-500 text-[8px] font-bold">${item.note}</span>` : ''}
-                        </div>
-                    </div>`;
+                    html += `<div class="transit-step"><div class="transit-badge"><span class="text-blue-600"><i class="fas fa-train mr-1"></i> ${item.transit}</span><span class="text-gray-400">${item.from} → ${item.to} (${item.duration})</span>${item.note ? `<span class="text-red-500 text-[8px] font-bold">${item.note}</span>` : ''}</div></div>`;
                 } else {
-                    html += `
-                    <div class="relative mb-6 pl-10">
-                        <div class="timeline-dot" style="border-color: ${accentColor}"></div>
-                        <div class="flex items-baseline mb-2">
-                            <span class="text-xl font-serif font-bold text-gray-800 mr-3">${item.time}</span>
-                            <div class="h-[1px] flex-1 bg-gray-100"></div>
-                        </div>
-                        <div class="itinerary-card p-4 active:scale-95 transition-all" style="border-left-color: ${accentColor}" onclick="showModal('${encodeURIComponent(JSON.stringify(item))}')">
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="text-[9px] font-bold uppercase tracking-widest" style="color: ${accentColor}">${item.tag}</span>
-                                ${item.tag === 'WBC' ? '<span class="bg-red-600 text-white text-[8px] px-2 py-0.5 rounded font-black">WBC GAME</span>' : ''}
-                            </div>
-                            <h3 class="text-base font-bold leading-tight text-gray-800">${item.title}</h3>
-                        </div>
-                    </div>`;
+                    html += `<div class="relative mb-6 pl-10"><div class="timeline-dot" style="border-color:${color}"></div><div class="flex items-baseline mb-2"><span class="text-xl font-serif font-bold text-gray-800 mr-3">${item.time}</span><div class="h-[1px] flex-1 bg-gray-100"></div></div><div class="itinerary-card p-4 active:scale-95 transition-all" style="border-left-color:${color}" onclick="showModal('${encodeURIComponent(JSON.stringify(item))}')"><div class="flex items-center justify-between mb-1"><span class="text-[9px] font-bold uppercase tracking-widest" style="color:${color}">${item.tag}</span>${item.tag === 'WBC' ? '<span class="bg-red-600 text-white text-[8px] px-1.5 py-0.5 rounded font-black">WBC GAME</span>' : ''}</div><h3 class="text-base font-bold leading-tight">${item.title}</h3></div></div>`;
                 }
             });
             container.innerHTML = html + '</div><div id="map-container"></div>';
@@ -264,8 +222,8 @@
             document.getElementById('modal-img').src = "https://images.unsplash.com/photo-1542365887-11499f1ddee5?q=80&w=1000";
             document.getElementById('modal-tag').textContent = item.tag;
             document.getElementById('modal-title').textContent = item.title;
-            document.getElementById('modal-desc').textContent = item.desc || "準備好迎接熱血的一天了嗎？";
-            document.getElementById('modal-google-link').href = `http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(item.map || item.title)}`;
+            document.getElementById('modal-desc').textContent = "地點: " + (item.map || "行程詳情");
+            document.getElementById('modal-google-link').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.map || item.title)}`;
             m.classList.remove('hidden'); setTimeout(()=> { m.classList.remove('opacity-0'); m.querySelector('div').classList.remove('translate-y-full'); }, 10);
         }
         function closeModal() {
