@@ -6,9 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="WBC 2026">
-    <meta name="theme-color" content="#0f172a">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3516/3516315.png">
-    
     <title>WBC 應援之旅 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,112 +15,119 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Noto+Sans+TC:wght@400;700;900&display=swap');
         
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #0b1120; color: #f8fafc; overflow: hidden; }
-        .view-section { display: none; height: 100%; overflow-y: auto; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #0b1120; color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        h1, h2 { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+        .view-section { display: none; }
         .view-section.active { display: block; }
 
-        /* 新聞跑馬燈動畫 */
-        @keyframes ticker {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-150%); }
-        }
+        /* 新聞輪播動畫 */
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-200%); } }
         .news-ticker { animation: ticker 25s linear infinite; white-space: nowrap; }
 
-        /* 日期選單樣式 */
-        .date-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; padding: 10px; background: #1e293b; }
+        /* 七天日期選單 */
+        .date-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; padding: 12px; background: #1e293b; }
         .date-item { opacity: 0.4; transition: 0.3s; text-align: center; cursor: pointer; }
-        .active-date { opacity: 1 !important; color: #38bdf8; border-bottom: 3px solid #ef4444; }
+        .active-date { opacity: 1 !important; }
+        .active-date .date-num { color: #38bdf8 !important; }
+        .date-dot { width: 6px; height: 6px; border-radius: 50%; background-color: transparent; margin: 4px auto 0; }
+        .active-date .date-dot { background-color: #ef4444; }
 
-        /* 字卡與時間軸 */
-        .itinerary-card { background: #ffffff; border-radius: 1rem; color: #0f172a; border-left: 8px solid #38bdf8; }
-        .transit-step { border-left: 3px dashed #475569; margin-left: 1.5rem; }
-        .transit-badge { background-color: #1e293b; color: #94a3b8; font-size: 10px; padding: 6px 10px; border-radius: 6px; border: 1px solid #334155; }
+        /* 時間軸線 */
+        .timeline-line { position: absolute; left: 19px; top: 10px; bottom: 20px; width: 3px; background-color: #334155; z-index: 0; }
+        .timeline-dot { z-index: 10; background-color: #0b1120; border: 3px solid #38bdf8; width: 14px; height: 14px; border-radius: 50%; position: absolute; left: 13px; top: 8px; }
 
-        /* 底部選單 */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #334155; z-index: 50; }
-        .nav-btn.active { color: #38bdf8; }
+        /* 轉乘標籤 */
+        .transit-step { position: relative; margin-left: 1.5rem; padding: 0.8rem 1rem; border-left: 3px dashed #475569; margin-top: -0.5rem; margin-bottom: 0.5rem; }
+        .transit-badge { background-color: #1e293b; color: #94a3b8; font-size: 11px; font-weight: 700; padding: 8px 12px; border-radius: 6px; display: inline-flex; flex-direction: column; border: 1px solid #334155; }
 
-        /* 記帳本輸入列 */
-        .ledger-row { display: grid; grid-template-columns: 5rem 1fr; align-items: center; background: #1e293b; border-radius: 1rem; padding: 0.8rem; margin-bottom: 0.5rem; border: 1px solid #334155; }
-        .ledger-input { background: transparent; border: none; color: white; width: 100%; outline: none; text-align: center; }
+        /* 行程字卡：加粗飾條 (8px) */
+        .itinerary-card { background: #ffffff; border-radius: 1rem; color: #0f172a; border-left: 8px solid #38bdf8; cursor: pointer; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5); }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; display: flex; justify-content: space-around; padding: 14px; border-top: 1px solid #334155; z-index: 40; }
+        .nav-btn { color: #64748b; font-size: 22px; transition: 0.3s; }
+        .nav-btn.active { color: #f8fafc; }
 
-        #map-container { height: 280px; width: 100%; border-radius: 1.5rem; margin-top: 1rem; filter: invert(1) hue-rotate(180deg) brightness(0.8); }
+        #map-container { height: 260px; width: 100%; border-radius: 1.5rem; margin-top: 1rem; filter: invert(1) hue-rotate(180deg) brightness(0.8) contrast(1.2); border: 3px solid #1e293b; }
     </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
 
     <header class="bg-[#0f172a] pt-4 sticky top-0 z-30 shadow-2xl flex-shrink-0">
         <div class="flex justify-between items-center px-5 mb-2">
-            <div id="weather-box" class="flex gap-2 text-[10px] font-bold">
-                <div class="bg-slate-800 px-2 py-1 rounded">今日: <span id="w-temp-0">--°</span></div>
-                <div class="bg-slate-800 px-2 py-1 rounded">明日: <span id="w-temp-1">--°</span></div>
+            <div class="flex gap-2 text-[10px] font-bold">
+                <div class="bg-slate-800 px-2 py-1 rounded">Today: <span id="w-temp-0">--°</span></div>
+                <div class="bg-slate-800 px-2 py-1 rounded">Tomo: <span id="w-temp-1">--°</span></div>
             </div>
-            <h1 class="text-xs tracking-widest text-blue-400 font-black italic">WBC 2026 TOUR</h1>
+            <h1 class="text-xs tracking-widest text-blue-400 font-black italic">WBC 2026 GLOBAL TOUR</h1>
         </div>
 
         <div class="bg-blue-600/20 border-y border-blue-500/30 overflow-hidden py-1 h-7 flex items-center">
-            <div id="news-container" class="news-ticker text-[11px] font-bold text-blue-200">
-                載入即時新聞中... 加油台灣英雄！⚾ ⚾ ⚾ 
-            </div>
+            <div id="news-container" class="news-ticker text-[11px] font-bold text-blue-200 uppercase italic">載入即時新聞中... 台灣隊加油！⚾ ⚾ ⚾</div>
         </div>
 
         <div id="date-picker-container" class="date-grid"></div>
     </header>
 
     <main class="flex-1 overflow-hidden relative">
+        <section id="section-itinerary" class="view-section active p-5 pb-32 overflow-y-auto"></section>
         
-        <section id="section-itinerary" class="view-section active p-5 pb-32"></section>
-        
-        <section id="section-checklist" class="view-section p-5 pb-32">
+        <section id="section-checklist" class="view-section p-5 pb-32 overflow-y-auto">
             <div class="space-y-4">
                 <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
-                    <h3 class="font-black text-blue-400 mb-3 uppercase italic underline decoration-red-500">Transit Links</h3>
+                    <h3 class="font-black text-blue-400 mb-4 uppercase italic italic underline decoration-red-500">Transit Apps</h3>
                     <div class="grid grid-cols-2 gap-3">
-                        <a href="https://transit.yahoo.co.jp/" target="_blank" class="bg-slate-900 p-4 rounded-xl text-center border border-blue-500/30 active:scale-95 transition-all">
-                            <span class="text-xs font-bold block">Yahoo! 乘換案內</span>
+                        <a href="https://transit.yahoo.co.jp/" target="_blank" class="bg-slate-900 p-4 rounded-xl text-center border border-blue-500/30">
+                            <img src="https://transit.yahoo.co.jp/favicon.ico" class="w-5 h-5 mx-auto mb-1">
+                            <span class="text-[10px] font-bold">Yahoo! 乘換</span>
                         </a>
-                        <a href="https://www.tokyometro.jp/en/subwaymap/index.html" target="_blank" class="bg-slate-900 p-4 rounded-xl text-center border border-green-500/30 active:scale-95 transition-all">
-                            <span class="text-xs font-bold block">地鐵圖 (高清版)</span>
+                        <a href="https://www.navitime.co.jp/transfer/" target="_blank" class="bg-slate-900 p-4 rounded-xl text-center border border-green-500/30">
+                            <img src="https://www.navitime.co.jp/favicon.ico" class="w-5 h-5 mx-auto mb-1">
+                            <span class="text-[10px] font-bold">NAVITIME</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
+                    <h3 class="font-black text-green-400 mb-4 uppercase italic italic underline decoration-blue-500">Railway Maps</h3>
+                    <div class="space-y-3 text-xs">
+                        <a href="https://www.tokyometro.jp/library/en/subwaymap/pdf/rosen_en_2403.pdf" target="_blank" class="flex justify-between items-center p-3 bg-slate-900 rounded-lg border border-slate-700">
+                            <span>東京地鐵 (Tokyo Metro Map)</span><i class="fas fa-external-link-alt opacity-40"></i>
+                        </a>
+                        <a href="https://www.jreast.co.jp/e/downloads/pdf/tokyo_map_e.pdf" target="_blank" class="flex justify-between items-center p-3 bg-slate-900 rounded-lg border border-slate-700">
+                            <span>JR 東日本 (JR East Map)</span><i class="fas fa-external-link-alt opacity-40"></i>
                         </a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="section-ledger" class="view-section p-5 pb-32">
-            <div class="bg-slate-800 p-5 rounded-3xl border border-blue-500/30 mb-6">
-                <h3 class="font-black text-white italic mb-4 uppercase">New Expense</h3>
-                <div class="ledger-row">
-                    <span class="text-[10px] text-blue-400 font-bold uppercase">Desc</span>
-                    <input type="text" id="exp-desc" placeholder="例如：燒肉" class="ledger-input">
-                </div>
-                <div class="ledger-row">
-                    <span class="text-[10px] text-blue-400 font-bold uppercase">JPY</span>
-                    <input type="number" id="exp-amount" placeholder="0" class="ledger-input">
-                </div>
-                <button onclick="addExpense()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black italic shadow-lg active:scale-95 transition-all mt-2">SAVE & SYNC</button>
+        <section id="section-ledger" class="view-section p-5 pb-32 overflow-y-auto">
+            <div class="bg-slate-800 p-5 rounded-3xl border border-blue-500/30 mb-6 shadow-xl">
+                <h3 class="font-black text-white italic mb-4 uppercase">New Record</h3>
+                <input type="text" id="exp-desc" placeholder="項目 (例如：晚餐)" class="w-full bg-slate-900 border-none rounded-xl p-3 mb-2 text-sm text-white">
+                <input type="number" id="exp-amount" placeholder="金額 (JPY)" class="w-full bg-slate-900 border-none rounded-xl p-3 mb-4 text-sm text-white">
+                <button onclick="addExpense()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black italic shadow-lg active:scale-95 transition-all">SAVE & SYNC</button>
             </div>
             <div id="expense-list" class="space-y-3"></div>
         </section>
     </main>
 
     <nav class="bottom-nav">
-        <button onclick="toggleView('checklist')" id="btn-checklist" class="nav-btn flex flex-col items-center text-slate-500"><i class="fas fa-compass text-xl"></i><span class="text-[9px] font-bold mt-1">HELPER</span></button>
-        <button onclick="toggleView('itinerary')" id="btn-itinerary" class="nav-btn active flex flex-col items-center text-slate-500"><i class="fas fa-bolt text-xl"></i><span class="text-[9px] font-bold mt-1">PLAY</span></button>
-        <button onclick="toggleView('ledger')" id="btn-ledger" class="nav-btn flex flex-col items-center text-slate-500"><i class="fas fa-wallet text-xl"></i><span class="text-[9px] font-bold mt-1">WALLET</span></button>
+        <button onclick="toggleView('checklist')" id="btn-checklist" class="nav-btn flex flex-col items-center"><i class="fas fa-compass"></i><span class="text-[9px] font-bold mt-1 uppercase">Helper</span></button>
+        <button onclick="toggleView('itinerary')" id="btn-itinerary" class="nav-btn active flex flex-col items-center"><i class="fas fa-bolt"></i><span class="text-[9px] font-bold mt-1 uppercase">Play</span></button>
+        <button onclick="toggleView('ledger')" id="btn-ledger" class="nav-btn flex flex-col items-center"><i class="fas fa-wallet"></i><span class="text-[9px] font-bold mt-1 uppercase">Wallet</span></button>
     </nav>
 
-    <div id="detail-modal" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-end justify-center transition-opacity duration-300 opacity-0">
-        <div class="bg-slate-900 w-full max-w-md rounded-t-3xl overflow-hidden max-h-[85vh] flex flex-col translate-y-full transition-transform duration-300 border-t-4 border-red-500">
-            <div class="relative h-52 flex-shrink-0">
+    <div id="detail-modal" class="fixed inset-0 bg-black/95 z-[60] hidden flex items-end justify-center transition-opacity duration-300 opacity-0">
+        <div class="bg-slate-900 w-full max-w-md rounded-t-3xl overflow-hidden max-h-[85vh] flex flex-col translate-y-full transition-transform duration-300 border-t-4 border-blue-500">
+            <div class="relative h-56 flex-shrink-0">
                 <img id="modal-img" src="" class="w-full h-full object-cover">
                 <button onclick="closeModal()" class="absolute top-4 right-4 bg-black/50 text-white rounded-full p-2"><i class="fas fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto">
-                <span id="modal-tag" class="text-[10px] font-bold tracking-widest uppercase bg-blue-600 px-2 py-1 rounded text-white mb-2 inline-block"></span>
+                <span id="modal-tag" class="text-[10px] font-bold tracking-widest uppercase bg-blue-600 text-white px-2 py-1 rounded mb-2 inline-block"></span>
                 <h3 id="modal-title" class="text-2xl font-black text-white italic mb-2"></h3>
-                <p id="modal-desc" class="text-slate-300 leading-relaxed text-sm mb-6"></p>
-                <a id="modal-google-link" href="#" target="_blank" class="w-full bg-blue-600 text-white py-4 rounded-xl flex items-center justify-center font-black text-sm"><i class="fab fa-google mr-2 text-yellow-400"></i> GOOGLE MAPS</a>
+                <p id="modal-desc" class="text-slate-300 text-sm leading-relaxed mb-6 whitespace-pre-line"></p>
+                <a id="modal-google-link" href="#" target="_blank" class="w-full bg-blue-600 text-white py-4 rounded-xl flex items-center justify-center font-black text-sm"><i class="fab fa-google mr-2 text-yellow-400"></i> GOOGLE MAPS 導航</a>
             </div>
         </div>
     </div>
@@ -130,62 +135,104 @@
     <script>
         const startDate = new Date('2026-03-04');
         const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-        const SYNC_URL = 'https://script.google.com/macros/s/AKfycbyWT2DgcwNKNct12xO6PAMQDszCXe4j2sNbOt2-lNairKqnqyUDDBdURWB1zIdv6YSuLQ/exec'; // 請替換成您的 GAS URL
-        const newsData = [
-            { text: "WBC：台灣隊首戰澳洲，先發投手待定 | ", link: "https://sports.yahoo.co.jp/" },
-            { text: "應援團抵達東京巨蛋，期待台灣加油聲震天！ | ", link: "https://sports.yahoo.co.jp/" },
-            { text: "日本隊宣布準決賽門票已全數售罄 | ", link: "https://sports.yahoo.co.jp/" }
-        ];
+        const SYNC_URL = 'https://script.google.com/macros/s/AKfycbwnAoDsbgiHImkf54L8jG0paehqET1gixBQxSSRwr_wW3cKDRMKcJ5K_QmkIspncwzfGA/exec';
 
         let currentDay = 1;
         let expenses = JSON.parse(localStorage.getItem('wbc_expenses') || '[]');
         let map = null;
+        const colors = ['#38bdf8', '#ef4444', '#10b981', '#f59e0b'];
 
-        // 保持您提供的 tripData
+        // 嚴格使用您的行程資料
         const tripData = {
             1: [
-                { time: "07:35", tag: "Flight", title: "桃園機場 CI154 出發", icon: "fa-plane", lat: 25.079, lng: 121.234 },
+                { time: "07:35", tag: "Flight", title: "桃園機場 CI154 出發", icon: "fa-plane", desc: "請於05:30抵達二航辦理登機。" },
                 { transit: "中華航空 CI154", from: "TPE", to: "NGO", duration: "3h 30min" },
-                { time: "11:05", tag: "Arrival", title: "抵達中部國際機場", icon: "fa-plane-arrival", lat: 34.858, lng: 136.811 },
+                { time: "11:05", tag: "Arrival", title: "抵達中部國際機場", icon: "fa-plane-arrival", map: "中部國際機場" },
                 { transit: "名鐵 μ-sky 特急", from: "中部機場站", to: "名鐵名古屋站", duration: "28 min" },
-                { time: "12:45", tag: "Arrival", title: "抵達名古屋車站", icon: "fa-location-dot", lat: 35.170, lng: 136.881 },
+                { time: "12:45", tag: "Arrival", title: "抵達名古屋車站", icon: "fa-location-dot", map: "名古屋車站" },
                 { transit: "JR 新幹線 Nozomi", from: "名古屋站", to: "東京站", duration: "100 min", note: "⚠️ 預約特大行李位" },
                 { transit: "JR 山手線 / 京濱東北線", from: "東京站", to: "御徒町站", duration: "6 min" },
-                { time: "17:00", tag: "Hotel", title: "APA新御徒町", icon: "fa-hotel", lat: 35.706, lng: 139.780 },
+                { time: "17:00", tag: "Hotel", title: "APA新御徒町", icon: "fa-hotel", map: "APA Hotel Shin Okachimachi", lat: 35.706, lng: 139.780 },
                 { transit: "步行", from: "飯店", to: "阿美橫町", duration: "12 min" },
-                { time: "17:30", tag: "Night", title: "阿美橫町 & 秋葉原", icon: "fa-bag-shopping", lat: 35.698, lng: 139.773 },
+                { time: "17:30", tag: "Night", title: "阿美橫町 & 秋葉原", icon: "fa-bag-shopping", map: "Akihabara", lat: 35.698, lng: 139.773 },
                 { transit: "JR 山手線", from: "秋葉原", to: "御徒町站", duration: "10 min" },
                 { time: "21:30", tag: "Hotel", title: "APA新御徒町", icon: "fa-moon", lat: 35.706, lng: 139.780 }
             ],
             2: [
                 { time: "08:00", tag: "Hotel", title: "APA新御徒町", icon: "fa-sun", lat: 35.706, lng: 139.780 },
                 { transit: "筑波快線", from: "新御徒町", to: "淺草", duration: "10 min" },
-                { time: "09:00", tag: "Culture", title: "淺草寺", icon: "fa-torii-gate", lat: 35.714, lng: 139.796 },
+                { time: "09:00", tag: "Culture", title: "淺草寺", icon: "fa-torii-gate", map: "淺草寺", lat: 35.714, lng: 139.796 },
                 { transit: "都營淺草線", from: "淺草", to: "淺草橋", duration: "3 min" },
                 { transit: "JR 中央總武線", from: "淺草橋", to: "水道橋", duration: "7 min" },
-                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 澳洲", icon: "fa-baseball-bat-ball", lat: 35.705, lng: 139.751 },
+                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 澳洲", icon: "fa-baseball-bat-ball", map: "東京巨蛋", lat: 35.705, lng: 139.751 },
                 { transit: "都營三田線", from: "水道橋", to: "神保町", duration: "2 min" },
-                { time: "16:00", tag: "Shop", title: "Mizuno 旗艦店", icon: "fa-store", lat: 35.695, lng: 139.762 },
+                { time: "16:00", tag: "Shop", title: "Mizuno 旗艦店", icon: "fa-store", map: "Mizuno Tokyo", lat: 35.695, lng: 139.762 },
                 { transit: "都營新宿線", from: "神保町", to: "新宿", duration: "10 min" },
-                { time: "17:30", tag: "Dinner", title: "新宿逛街 & 晚餐", icon: "fa-utensils", lat: 35.689, lng: 139.700 },
+                { time: "17:30", tag: "Dinner", title: "新宿逛街 & 晚餐", icon: "fa-utensils", map: "新宿車站", lat: 35.689, lng: 139.700 },
                 { transit: "都營大江戶線", from: "新宿西口", to: "新御徒町", duration: "19 min" },
                 { time: "21:30", tag: "Hotel", title: "APA新御徒町", icon: "fa-moon", lat: 35.706, lng: 139.780 }
             ],
-            // 3-7 天資料同上... (礙於長度，實際運行時請包含完整資料)
+            3: [
+                { time: "08:00", tag: "Hotel", title: "APA新御徒町", icon: "fa-sun", lat: 35.706, lng: 139.780 },
+                { transit: "JR 京濱東北線", from: "御徒町", to: "東京", duration: "7 min" },
+                { transit: "JR 東海道本線", from: "東京", to: "大船", duration: "43 min" },
+                { transit: "湘南單軌電車 (懸吊式)", from: "大船站", to: "湘南江之島站", duration: "14 min" },
+                { time: "10:00", tag: "Tour", title: "江之島散策", icon: "fa-umbrella-beach", map: "江之島", lat: 35.301, lng: 139.481 },
+                { transit: "江之電", from: "江之島站", to: "鎌倉高校前站", duration: "8 min" },
+                { time: "12:15", tag: "Photo", title: "高校前平交道朝聖", icon: "fa-camera", map: "鎌倉高校前", lat: 35.306, lng: 139.502 },
+                { transit: "江之電", from: "高校前站", to: "長谷站", duration: "10 min" },
+                { time: "13:30", tag: "Culture", title: "鎌倉大佛", icon: "fa-vihara", map: "高德院", lat: 35.316, lng: 139.536 },
+                { transit: "江之電", from: "長谷站", to: "鎌倉站", duration: "5 min" },
+                { time: "15:00", tag: "Culture", title: "小町通 & 八幡宮", icon: "fa-torii-gate", map: "鶴岡八幡宮", lat: 35.326, lng: 139.556 },
+                { transit: "JR 湘南新宿線", from: "鎌倉", to: "新宿", duration: "60 min" },
+                { time: "19:00", tag: "WBC", title: "📺 轉播：台灣 vs 日本", icon: "fa-tv", map: "HUB 秋葉原", lat: 35.698, lng: 139.773 },
+                { time: "22:00", tag: "Hotel", title: "APA新御徒町", icon: "fa-moon", lat: 35.706, lng: 139.780 }
+            ],
+            4: [
+                { time: "09:30", tag: "Hotel", title: "APA新御徒町", icon: "fa-sun", lat: 35.706, lng: 139.780 },
+                { transit: "都營大江戶線", from: "新御徒町", to: "春日", duration: "5 min" },
+                { transit: "Metro南北線", from: "後樂園", to: "永田町", duration: "8 min" },
+                { time: "10:00", tag: "Culture", title: "日枝神社參拜", icon: "fa-vihara", map: "日枝神社", lat: 35.674, lng: 139.739 },
+                { transit: "Metro南北線", from: "永田町", to: "後樂園", duration: "8 min" },
+                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 捷克", icon: "fa-baseball-bat-ball", map: "東京巨蛋", lat: 35.705, lng: 139.751 },
+                { transit: "JR 中央線", from: "水道橋", to: "代代木", duration: "12 min" },
+                { transit: "JR 山手線", from: "代代木", to: "原宿", duration: "2 min" },
+                { time: "16:00", tag: "Shopping", title: "原宿 & 澀谷", icon: "fa-masks-theater", map: "澀谷", lat: 35.659, lng: 139.700 },
+                { transit: "JR 山手線", from: "澀谷", to: "御徒町", duration: "33 min" },
+                { time: "21:30", tag: "Hotel", title: "APA新御徒町", icon: "fa-hotel", lat: 35.706, lng: 139.780 }
+            ],
+            5: [
+                { time: "10:00", tag: "Hotel", title: "APA新御徒町 (寄行李)", icon: "fa-suitcase", lat: 35.706, lng: 139.780 },
+                { transit: "都營大江戶線", from: "新御徒町", to: "春日", duration: "5 min" },
+                { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 韓國", icon: "fa-fire", map: "東京巨蛋", lat: 35.705, lng: 139.751 },
+                { transit: "都營大江戶線", from: "春日", to: "新御徒町", duration: "5 min" },
+                { time: "17:00", tag: "Hotel", title: "APA新御徒町 (拿行李)", icon: "fa-suitcase", lat: 35.706, lng: 139.780 },
+                { transit: "JR 山手線", from: "御徒町", to: "東京", duration: "6 min" },
+                { transit: "JR 新幹線 Nozomi", from: "東京", to: "名古屋", duration: "100 min" },
+                { time: "21:00", tag: "Hotel", title: "APA 名古屋站前北", icon: "fa-hotel", map: "APA名古屋站前北", lat: 35.174, lng: 136.884 }
+            ],
+            6: [
+                { time: "09:00", tag: "Hotel", title: "APA 名古屋站前北", icon: "fa-sun", lat: 35.174, lng: 136.884 },
+                { transit: "地鐵 櫻通線", from: "名古屋站", to: "久屋大通", duration: "4 min" },
+                { transit: "地鐵 名城線", from: "久屋大通", to: "名古屋城", duration: "2 min" },
+                { time: "09:30", tag: "Sightseeing", title: "名古屋城", icon: "fa-chess-rook", map: "名古屋城", lat: 35.184, lng: 136.901 },
+                { transit: "地鐵 鶴舞線", from: "淺間町", to: "大須觀音", duration: "6 min" },
+                { time: "12:00", tag: "Market", title: "大須觀音&商店街", icon: "fa-store", map: "大須觀音", lat: 35.159, lng: 136.899 },
+                { transit: "地鐵 名城線", from: "上前津", to: "榮", duration: "5 min" },
+                { time: "16:00", tag: "Night", title: "榮商圈 & 綠洲 21", icon: "fa-tower-observation", map: "榮站", lat: 35.171, lng: 136.909 },
+                { transit: "地鐵 東山線", from: "榮", to: "名古屋站", duration: "5 min" },
+                { transit: "步行", from: "名古屋站", to: "飯店", duration: "8 min" },
+                { time: "21:00", tag: "Hotel", title: "APA 名古屋站前北", icon: "fa-moon", lat: 35.174, lng: 136.884 }
+            ],
+            7: [
+                { time: "06:30", tag: "Hotel", title: "APA 名古屋站前北", icon: "fa-plane-departure", lat: 35.174, lng: 136.884 },
+                { transit: "名鐵 μ-sky 特急", from: "名鐵名古屋", to: "中部機場", duration: "28 min" },
+                { time: "09:50", tag: "Flight", title: "CI151 飛往桃園", icon: "fa-plane-arrival", lat: 34.858, lng: 136.811 }
+            ]
         };
 
-        // --- 核心功能 ---
-        function initApp() {
-    renderNews();      // 初始載入
-    fetchWeather();    // 初始天氣
-    // ... 其他初始功能
-    
-    // 每 30 分鐘自動更新一次新聞與天氣
-    setInterval(() => {
-        renderNews();
-        fetchWeather();
-    }, 30 * 60 * 1000);
-}
+        // --- 全域功能 ---
+        function initApp() { fetchWeather(); renderNews(); renderDatePicker(); renderItinerary(); }
 
         async function fetchWeather() {
             try {
@@ -193,24 +240,16 @@
                 const data = await res.json();
                 document.getElementById('w-temp-0').innerText = `${Math.round(data.daily.temperature_2m_min[0])}/${Math.round(data.daily.temperature_2m_max[0])}°`;
                 document.getElementById('w-temp-1').innerText = `${Math.round(data.daily.temperature_2m_min[1])}/${Math.round(data.daily.temperature_2m_max[1])}°`;
-            } catch (e) { console.error("天氣獲取失敗"); }
+            } catch(e) {}
         }
 
         async function renderNews() {
-    const container = document.getElementById('news-container');
-    try {
-        // 從您的 GAS 網址抓取動態新聞
-        const response = await fetch(SYNC_URL + "?type=news");
-        const dynamicNews = await response.json();
-        
-        container.innerHTML = dynamicNews.map(n => 
-            `<a href="${n.link}" target="_blank" class="mr-10 hover:text-white transition-colors">${n.text}</a>`
-        ).join('');
-    } catch (e) {
-        console.error("新聞同步失敗:", e);
-        container.innerHTML = "即時新聞載入中... 加油台灣英雄！⚾ ⚾ ⚾";
-    }
-}
+            try {
+                const response = await fetch(SYNC_URL + "?type=news");
+                const news = await response.json();
+                document.getElementById('news-container').innerHTML = news.map(n => `<a href="${n.link}" target="_blank" class="mr-10">${n.text}</a>`).join('');
+            } catch(e) {}
+        }
 
         function renderDatePicker() {
             const picker = document.getElementById('date-picker-container');
@@ -222,7 +261,7 @@
                 const div = document.createElement('div');
                 div.className = `date-item ${dayNum === currentDay ? 'active-date' : ''}`;
                 div.onclick = () => { currentDay = dayNum; toggleView('itinerary'); };
-                div.innerHTML = `<div class="text-[7px] uppercase font-bold text-slate-500">Mar</div><div class="text-lg font-black date-num leading-tight">${date.getDate()}</div><div class="text-[7px] font-bold opacity-60 uppercase">${daysOfWeek[date.getDay()]}</div>`;
+                div.innerHTML = `<div class="text-[7px] font-bold">MAR</div><div class="text-lg font-black date-num leading-tight">${date.getDate()}</div><div class="date-dot"></div><div class="text-[7px] font-bold opacity-60 uppercase">${daysOfWeek[date.getDay()]}</div>`;
                 picker.appendChild(div);
             }
         }
@@ -231,15 +270,28 @@
             const container = document.getElementById('section-itinerary');
             container.innerHTML = '';
             let html = '<div class="timeline-wrapper"><div class="timeline-line"></div>';
-            if (!tripData[currentDay]) { html += '<p class="text-center text-slate-500">行程加載中...</p>'; } else {
-                tripData[currentDay].forEach((item) => {
-                    if (item.transit) {
-                        html += `<div class="transit-step mb-6"><div class="transit-badge"><span><i class="fas fa-train mr-1 text-blue-400"></i> ${item.transit}</span><span>${item.from} → ${item.to} (${item.duration})</span></div></div>`;
-                    } else {
-                        html += `<div class="relative mb-8 pl-10"><div class="timeline-dot"></div><div class="flex items-baseline mb-2"><span class="text-2xl font-black italic text-white mr-3">${item.time}</span><div class="h-[2px] flex-1 bg-slate-800"></div></div><div class="itinerary-card p-5 active:scale-95 transition-all" onclick="showModal('${encodeURIComponent(JSON.stringify(item))}')"><div class="flex items-center justify-between mb-1"><span class="text-[9px] font-black uppercase text-blue-600 tracking-widest">${item.tag}</span>${item.tag === 'WBC' ? '<span class="bg-red-600 text-white text-[8px] px-2 py-0.5 rounded font-black italic">WBC MATCH</span>' : ''}</div><h3 class="text-lg font-black leading-tight">${item.title}</h3></div></div>`;
-                    }
-                });
-            }
+            tripData[currentDay].forEach((item, idx) => {
+                const accent = colors[idx % colors.length];
+                if (item.transit) {
+                    html += `<div class="transit-step"><div class="transit-badge"><span><i class="fas fa-train mr-1 text-blue-400"></i> ${item.transit}</span><span class="text-[9px] opacity-60">${item.from} → ${item.to} (${item.duration})</span></div></div>`;
+                } else {
+                    html += `
+                    <div class="relative mb-8 pl-10">
+                        <div class="timeline-dot" style="border-color:${accent}"></div>
+                        <div class="flex items-baseline mb-2">
+                            <span class="text-2xl font-black italic text-white mr-3">${item.time}</span>
+                            <div class="h-[2px] flex-1 bg-slate-800"></div>
+                        </div>
+                        <div class="itinerary-card p-5 active:scale-95 transition-all" style="border-left-color:${accent}" onclick="showModal('${encodeURIComponent(JSON.stringify(item))}')">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[10px] font-black uppercase tracking-widest italic" style="color:${accent}">${item.tag}</span>
+                                ${item.tag === 'WBC' ? '<span class="bg-red-600 text-white text-[9px] px-2 py-1 rounded font-black italic">WBC GAME</span>' : ''}
+                            </div>
+                            <h3 class="text-lg font-black leading-tight">${item.title}</h3>
+                        </div>
+                    </div>`;
+                }
+            });
             html += '</div><div id="map-container"></div>';
             container.innerHTML = html;
             setTimeout(() => renderDailyMap(), 100);
@@ -252,7 +304,7 @@
             map = L.map('map-container', { zoomControl: false, attributionControl: false });
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
             const markers = [];
-            tripData[currentDay]?.forEach(p => { if (p.lat && p.lng) { L.marker([p.lat, p.lng]).addTo(map); markers.push([p.lat, p.lng]); } });
+            tripData[currentDay].forEach(p => { if (p.lat && p.lng) { L.marker([p.lat, p.lng]).addTo(map); markers.push([p.lat, p.lng]); } });
             if (markers.length > 0) map.fitBounds(L.polyline(markers).getBounds(), { padding: [30, 30] });
             map.invalidateSize();
         }
@@ -266,45 +318,14 @@
             if (v === 'ledger') renderLedger();
         }
 
-        // --- 記帳功能 ---
-        function renderLedger() {
-            const container = document.getElementById('expense-list');
-            container.innerHTML = expenses.map(e => `
-                <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700 flex justify-between items-center">
-                    <div><div class="text-lg font-bold">¥${e.amount}</div><div class="text-xs text-slate-400 font-bold">${e.desc}</div></div>
-                    <button onclick="deleteExpense(${e.id})" class="text-red-500"><i class="fas fa-trash-can"></i></button>
-                </div>
-            `).join('') || '<div class="text-center text-slate-600 py-10 font-bold">尚無紀錄</div>';
-        }
-
-        async function addExpense() {
-            const amount = document.getElementById('exp-amount').value;
-            const desc = document.getElementById('exp-desc').value;
-            if (!amount || !desc) return alert("請填寫金額與項目");
-            const newExp = { id: Date.now(), amount, desc };
-            expenses.unshift(newExp);
-            localStorage.setItem('wbc_expenses', JSON.stringify(expenses));
-            renderLedger();
-            // 雲端同步
-            try { fetch(SYNC_URL, { method: 'POST', body: JSON.stringify(expenses) }); } catch(e) {}
-            document.getElementById('exp-amount').value = '';
-            document.getElementById('exp-desc').value = '';
-        }
-
-        function deleteExpense(id) {
-            expenses = expenses.filter(e => e.id !== id);
-            localStorage.setItem('wbc_expenses', JSON.stringify(expenses));
-            renderLedger();
-        }
-
         function showModal(s) {
             const item = JSON.parse(decodeURIComponent(s));
             const m = document.getElementById('detail-modal');
             document.getElementById('modal-img').src = "https://images.unsplash.com/photo-1542365887-11499f1ddee5?q=80&w=1000";
             document.getElementById('modal-tag').textContent = item.tag;
             document.getElementById('modal-title').textContent = item.title;
-            document.getElementById('modal-desc').textContent = "地點導航與詳細資訊。台灣加油！";
-            document.getElementById('modal-google-link').href = `http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(item.title)}`;
+            document.getElementById('modal-desc').textContent = "地點: " + (item.map || "行程詳情") + "\n台灣英雄加油！這是一趟熱血之旅。";
+            document.getElementById('modal-google-link').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.map || item.title)}`;
             m.classList.remove('hidden'); setTimeout(() => { m.classList.remove('opacity-0'); m.querySelector('div').classList.remove('translate-y-full'); }, 10);
         }
 
@@ -312,6 +333,27 @@
             const m = document.getElementById('detail-modal');
             m.classList.add('opacity-0'); m.querySelector('div').classList.add('translate-y-full');
             setTimeout(() => m.classList.add('hidden'), 300);
+        }
+
+        // --- 記帳邏輯 ---
+        async function renderLedger() {
+            try {
+                const response = await fetch(SYNC_URL);
+                expenses = await response.json();
+            } catch(e) {}
+            const list = document.getElementById('expense-list');
+            list.innerHTML = expenses.map(e => `<div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700 flex justify-between items-center"><div><div class="text-lg font-bold">¥${e.amount}</div><div class="text-xs text-slate-400 font-bold">${e.desc}</div></div></div>`).join('') || '<div class="text-center text-slate-600 py-10 font-bold italic">No Record Found</div>';
+        }
+
+        async function addExpense() {
+            const amount = document.getElementById('exp-amount').value;
+            const desc = document.getElementById('exp-desc').value;
+            if (!amount || !desc) return;
+            expenses.unshift({ id: Date.now(), amount, desc });
+            localStorage.setItem('wbc_expenses', JSON.stringify(expenses));
+            renderLedger();
+            try { await fetch(SYNC_URL, { method: 'POST', body: JSON.stringify(expenses) }); } catch(e) {}
+            document.getElementById('exp-amount').value = ''; document.getElementById('exp-desc').value = '';
         }
 
         window.onload = initApp;
