@@ -16,40 +16,68 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
         
-        :root { --wbc-blue: #0054A6; --wbc-red: #E4002B; --bg-light: #ffffff; }
+        :root {
+            --wbc-blue: #0054A6;
+            --wbc-red: #E4002B;
+            --bg-light: #ffffff;
+        }
+
         body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg-light); color: #333; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         h1, h2 { font-family: 'Oswald', sans-serif; }
 
-        header { height: 25vh; background: #002b5c; display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: env(safe-area-inset-top); flex-shrink: 0; text-align: center; }
-        .weather-badge { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 4px 12px; display: flex; align-items: center; gap: 6px; margin-top: 8px; color: white; border: 1px solid rgba(255,255,255,0.1); }
+        /* Header (1/4 Page, 沖繩配置, 白底) */
+        header { 
+            height: 25vh; 
+            background: white; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0; 
+            padding-top: env(safe-area-inset-top); 
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .weather-badge { background: #f8f9fa; border-radius: 12px; padding: 4px 12px; border: 1px solid #eee; display: flex; align-items: center; gap: 8px; margin-top: 8px; }
 
         main { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .view-section { display: none; padding: 20px; padding-bottom: 180px; }
         .view-section.active { display: block; }
 
+        /* 日期選單 */
         .date-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; width: 100%; max-width: 400px; margin-top: 15px; }
-        .date-item { opacity: 0.4; transition: 0.3s; text-align: center; cursor: pointer; color: white; }
+        .date-item { opacity: 0.3; transition: 0.3s; text-align: center; cursor: pointer; }
         .active-date { opacity: 1 !important; transform: translateY(-2px); }
-        .active-date .date-num { color: #38bdf8 !important; font-weight: 900; }
+        .active-date .date-num { color: var(--wbc-blue) !important; font-weight: 900; }
         .date-dot { width: 4px; height: 4px; border-radius: 50%; background-color: transparent; margin: 4px auto 2px; }
         .active-date .date-dot { background-color: var(--wbc-red); }
 
+        /* 時間軸字卡：10px 粗飾條 */
         .timeline-wrapper { position: relative; width: 100%; }
         .timeline-line { position: absolute; left: 19px; top: 10px; bottom: 20px; width: 2px; background-color: #E2E8F0; z-index: 0; }
         .timeline-dot { z-index: 10; background-color: white; border: 2px solid var(--wbc-blue); width: 12px; height: 12px; border-radius: 50%; position: absolute; left: 14px; top: 8px; }
-        .itinerary-card { background: white; border-radius: 1rem; border-left: 10px solid var(--wbc-blue); box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; border: 1px solid #f0f0f0; border-left-width: 10px; }
+        .itinerary-card { background: white; border-radius: 1rem; color: #1A202C; border-left: 10px solid var(--wbc-blue); box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; border: 1px solid #f0f0f0; }
 
+        /* 轉乘資訊單行且右移避開直線 */
         .transit-step { position: relative; margin-left: 48px; margin-top: -8px; margin-bottom: 15px; z-index: 5; }
         .transit-badge { background-color: #f1f5f9; color: #475569; font-size: 10px; font-weight: 700; padding: 5px 12px; border-radius: 8px; border: 1px solid #E2E8F0; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 
+        /* 底部導覽與垂直新聞 */
         .footer-fixed { position: fixed; bottom: 0; left: 0; right: 0; background: white; z-index: 50; border-top: 1px solid #eee; padding-bottom: env(safe-area-inset-bottom); }
         .news-bar { height: 32px; background: #fcfaf2; overflow: hidden; display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid #f0f0f0; }
+        .news-window { height: 32px; overflow: hidden; }
         .news-scroll { animation: ticker-vertical 15s infinite; }
-        @keyframes ticker-vertical { 0%, 15% { transform: translateY(0); } 20%, 35% { transform: translateY(-32px); } 40%, 55% { transform: translateY(-64px); } 60%, 75% { transform: translateY(-96px); } 80%, 95% { transform: translateY(-128px); } 100% { transform: translateY(0); } }
+        @keyframes ticker-vertical { 0%, 15% { transform: translateY(0); } 20%, 35% { transform: translateY(-32px); } 40%, 55% { transform: translateY(-64px); } 60%, 75% { transform: translateY(-96px); } 80%, 95% { transform: translateY(-120px); } 100% { transform: translateY(0); } }
 
-        .nav-grid { display: flex; justify-content: space-around; padding: 12px 0; }
+        .nav-grid { display: grid; grid-template-columns: 1fr 1fr; padding: 12px 0; }
         .nav-btn { color: #A0AEC0; transition: 0.3s; font-weight: bold; }
-        .nav-btn.active { color: var(--wbc-blue); }
+        .nav-btn.active { color: var(--wbc-red); }
+
+        /* 帳本一項目一行配置 */
+        .ledger-row { background: #f9f9f9; padding: 12px 15px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+        .ledger-row span { font-size: 10px; font-weight: 800; color: #a0aec0; text-transform: uppercase; }
+        .ledger-input { background: transparent; border: none; font-size: 14px; font-weight: 700; text-align: right; outline: none; width: 60%; color: #333; }
 
         #map-container { height: 260px; width: 100%; border-radius: 1.5rem; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-top: 20px; }
     </style>
@@ -57,27 +85,30 @@
 <body>
 
     <header>
-        <div>
-            <h1 class="text-[8px] tracking-[0.3em] text-blue-300 font-bold uppercase">WBC 2026 Official Guide</h1>
-            <h2 class="text-2xl font-black text-white italic tracking-tighter">應援之旅攻略</h2>
+        <div class="pt-2">
+            <h1 class="text-[8px] tracking-[0.3em] text-gray-400 font-bold uppercase">WBC 2026 Tokyo / Nagoya</h1>
+            <h2 class="text-2xl font-black text-gray-800 leading-none tracking-tighter">應援之旅攻略</h2>
         </div>
         <div id="weather-info" class="flex gap-3">
-            <div class="weather-badge"><i id="w-icon-0" class="fas fa-sun text-yellow-400"></i><span id="w-text-0" class="text-[9px]">--</span><span id="w-temp-0" class="text-[9px] font-mono">--°</span></div>
-            <div class="weather-badge"><i id="w-icon-1" class="fas fa-cloud text-blue-300"></i><span id="w-text-1" class="text-[9px]">--</span><span id="w-temp-1" class="text-[9px] font-mono">--°</span></div>
+            <div class="weather-badge">
+                <span class="text-[7px] font-bold text-gray-400">今日</span><i id="w-icon-0" class="fas fa-sun text-yellow-400 text-xs"></i><span id="w-text-0" class="text-[9px]">--</span><span id="w-temp-0" class="text-[9px] font-mono">--°</span>
+            </div>
+            <div class="weather-badge">
+                <span class="text-[7px] font-bold text-gray-400">明日</span><i id="w-icon-1" class="fas fa-cloud text-blue-300 text-xs"></i><span id="w-text-1" class="text-[9px]">--</span><span id="w-temp-1" class="text-[9px] font-mono">--°</span>
+            </div>
         </div>
         <div id="date-picker-container" class="date-grid"></div>
     </header>
 
     <main id="scroll-content">
         <section id="section-itinerary" class="view-section active"></section>
-        
         <section id="section-checklist" class="view-section p-5">
             <div class="space-y-4">
-                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm text-center">
-                    <h3 class="text-xs font-bold text-blue-600 mb-4 uppercase tracking-widest">地鐵與路線圖</h3>
-                    <div class="grid grid-cols-2 gap-2">
-                        <a href="tokyo_subway.png" target="_blank" class="p-3 bg-gray-50 rounded-xl text-[10px] font-bold">東京地鐵圖</a>
-                        <a href="JR_tokyo.png" target="_blank" class="p-3 bg-gray-50 rounded-xl text-[10px] font-bold">JR 東日本圖</a>
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                    <h3 class="text-xs font-bold text-blue-600 mb-4 uppercase tracking-widest"><i class="fas fa-map mr-2"></i>路線圖快搜</h3>
+                    <div class="grid grid-cols-1 gap-2">
+                        <a href="tokyo_subway.png" target="_blank" class="flex items-center justify-between p-4 bg-gray-50 rounded-xl"><span>東京地鐵全圖</span><i class="fas fa-chevron-right"></i></a>
+                        <a href="JR_tokyo.png" target="_blank" class="flex items-center justify-between p-4 bg-gray-50 rounded-xl"><span>JR 東日本圖</span><i class="fas fa-chevron-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -85,34 +116,30 @@
 
         <section id="section-ledger" class="view-section p-5">
             <div class="bg-white p-5 rounded-3xl shadow-md border border-gray-100 mb-6">
-                <h3 class="text-[10px] font-black text-gray-800 mb-4 uppercase">Wallet Sync</h3>
-                <div class="space-y-2">
-                    <input type="date" id="exp-date" class="w-full bg-gray-50 p-3 rounded-xl border-none text-xs font-bold text-gray-700 outline-none">
-                    <div class="flex gap-2">
-                        <div class="flex-1 bg-gray-50 p-3 rounded-xl flex justify-between items-center"><span class="text-[8px] font-bold text-gray-400">匯率</span><input type="number" id="exp-rate" value="0.215" step="0.001" class="bg-transparent text-right font-bold w-12 text-xs"></div>
-                        <div class="flex-[1.5] bg-gray-50 p-3 rounded-xl flex items-center gap-2">
-                            <select id="exp-currency" class="bg-transparent text-[10px] font-bold text-blue-600 outline-none"><option value="JPY">JPY</option><option value="TWD">TWD</option></select>
-                            <input type="number" id="exp-amount" placeholder="0" class="bg-transparent text-right font-black w-full text-sm">
-                        </div>
+                <h3 class="text-[10px] font-black text-gray-800 mb-4 uppercase tracking-widest">Expense & Cloud Sync</h3>
+                <div class="ledger-row"><span>Date</span><input type="date" id="exp-date" class="ledger-input"></div>
+                <div class="ledger-row"><span>Rate</span><input type="number" id="exp-rate" value="0.215" step="0.001" class="ledger-input"></div>
+                <div class="ledger-row">
+                    <span>Amount</span>
+                    <div class="flex gap-2 justify-end">
+                        <select id="exp-currency" class="bg-transparent font-bold text-blue-600 outline-none"><option value="JPY">JPY</option><option value="TWD">TWD</option></select>
+                        <input type="number" id="exp-amount" placeholder="0" class="ledger-input w-24">
                     </div>
-                    <div class="flex gap-2">
-                        <div class="flex-1 bg-gray-50 p-3 rounded-xl flex items-center justify-between">
-                            <span class="text-[8px] font-bold text-gray-400">支付者</span>
-                            <select id="exp-payer" class="bg-transparent text-xs font-bold text-gray-700 outline-none">
-                                <option value="CN">CN</option><option value="YS">YS</option><option value="JS">JS</option>
-                            </select>
-                        </div>
-                        <input type="text" id="exp-desc" placeholder="項目" class="flex-[2] bg-gray-50 p-3 rounded-xl text-xs font-bold">
-                    </div>
-                    <div class="p-2 border-t border-gray-50 mt-2">
-                        <div class="flex justify-around" id="split-checkboxes">
-                            <label class="text-[10px] font-bold"><input type="checkbox" value="CN" checked class="mr-1 accent-red-500">CN</label>
-                            <label class="text-[10px] font-bold"><input type="checkbox" value="YS" checked class="mr-1 accent-red-500">YS</label>
-                            <label class="text-[10px] font-bold"><input type="checkbox" value="JS" checked class="mr-1 accent-red-500">JS</label>
-                        </div>
-                    </div>
-                    <button onclick="addExpense()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg active:scale-95 text-[10px]">SAVE & SYNC</button>
                 </div>
+                <div class="ledger-row"><span>Item</span><input type="text" id="exp-desc" placeholder="消費項目" class="ledger-input"></div>
+                <div class="ledger-row">
+                    <span>Payer</span>
+                    <select id="exp-payer" class="ledger-input"><option value="CN">CN</option><option value="YS">YS</option><option value="JS">JS</option></select>
+                </div>
+                <div class="p-3 bg-[#f9f9f9] rounded-xl border border-f0f0f0 mt-2">
+                    <p class="text-[9px] font-bold text-gray-400 mb-3 uppercase text-center">Split With (勾選)</p>
+                    <div class="flex justify-around" id="split-checkboxes">
+                        <label class="text-xs font-bold text-gray-500"><input type="checkbox" value="CN" checked class="mr-1 accent-red-500">CN</label>
+                        <label class="text-xs font-bold text-gray-500"><input type="checkbox" value="YS" checked class="mr-1 accent-red-500">YS</label>
+                        <label class="text-xs font-bold text-gray-500"><input type="checkbox" value="JS" checked class="mr-1 accent-red-500">JS</label>
+                    </div>
+                </div>
+                <button onclick="addExpense()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg active:scale-95 transition-all text-[10px] tracking-widest mt-4 uppercase">SAVE TO CLOUD</button>
             </div>
             <div id="settlement-box" class="space-y-2 mb-6"></div>
             <div id="expense-list" class="space-y-2 pb-10"></div>
@@ -120,17 +147,25 @@
     </main>
 
     <div class="footer-fixed">
-        <div class="news-bar"><i class="fas fa-bullhorn text-red-500 text-[9px] mr-3"></i><div class="news-window flex-1"><div id="news-list" class="news-scroll flex flex-col text-[10px] font-bold text-gray-500"><div class="h-8 flex items-center">載入最新 WBC 情報中...</div></div></div></div>
-        <nav class="nav-grid">
-            <button onclick="toggleView('checklist')" id="btn-checklist" class="nav-btn flex flex-col items-center"><i class="fas fa-toolbox text-lg"></i><span class="text-[8px] mt-1">助手</span></button>
-            <button onclick="toggleView('ledger')" id="btn-ledger" class="nav-btn flex flex-col items-center"><i class="fas fa-wallet text-lg"></i><span class="text-[8px] mt-1">帳本</span></button>
+        <div class="news-bar">
+            <i class="fas fa-bullhorn text-red-500 text-[9px] mr-3"></i>
+            <div class="news-window flex-1">
+                <div id="news-list" class="news-scroll flex flex-col text-[10px] font-bold text-gray-500">
+                    <div class="h-8 flex items-center">台灣隊應援備戰中！⚾</div>
+                    <div class="h-8 flex items-center">3/6 晚 19:00 The world end 餐酒館見！⚾</div>
+                </div>
+            </div>
+        </div>
+        <nav class="nav-grid text-center">
+            <button onclick="toggleView('checklist')" id="btn-checklist" class="nav-btn flex flex-col items-center"><i class="fas fa-toolbox text-lg"></i><span class="text-[8px] mt-1 font-bold">助手</span></button>
+            <button onclick="toggleView('ledger')" id="btn-ledger" class="nav-btn flex flex-col items-center"><i class="fas fa-wallet text-lg"></i><span class="text-[8px] mt-1 font-bold">帳本</span></button>
         </nav>
     </div>
 
     <div id="detail-modal" class="fixed inset-0 bg-black/80 z-[100] hidden flex items-end justify-center transition-opacity duration-300 opacity-0">
         <div class="bg-white w-full max-w-md rounded-t-3xl overflow-hidden max-h-[85vh] flex flex-col translate-y-full transition-transform duration-300">
-            <div class="relative h-48 flex-shrink-0"><img id="modal-img" src="" class="w-full h-full object-cover"><button onclick="closeModal()" class="absolute top-4 right-4 bg-black/50 text-white rounded-full p-2"><i class="fas fa-xmark"></i></button></div>
-            <div class="p-6 overflow-y-auto"><h3 id="modal-title" class="text-xl font-black mb-2"></h3><p id="modal-desc" class="text-gray-500 text-sm leading-relaxed mb-6"></p><a id="modal-google-link" href="#" target="_blank" class="w-full bg-gray-900 text-white py-4 rounded-xl flex items-center justify-center font-bold text-xs shadow-xl"><i class="fab fa-google mr-2 text-yellow-400"></i> GOOGLE MAPS 導航</a></div>
+            <div class="relative h-48 flex-shrink-0"><img id="modal-img" src="" class="w-full h-full object-cover"><button onclick="closeModal()" class="absolute top-4 right-4 bg-black/40 text-white rounded-full p-2"><i class="fas fa-xmark"></i></button></div>
+            <div class="p-6 overflow-y-auto"><h3 id="modal-title" class="text-xl font-black mb-2 tracking-tighter"></h3><p id="modal-desc" class="text-gray-500 text-sm leading-relaxed mb-6"></p><a id="modal-google-link" href="#" target="_blank" class="w-full bg-gray-900 text-white py-4 rounded-xl flex items-center justify-center font-bold text-xs shadow-xl"><i class="fab fa-google mr-2 text-yellow-400"></i> GOOGLE MAPS 導航</a></div>
         </div>
     </div>
 
@@ -142,25 +177,27 @@
         const colors = ['#0054A6', '#E4002B', '#009B4D', '#F58220'];
         let currentDay = 1, expenses = [], map = null;
 
-        // 已修正座標 (lat/lng) 與補上路徑名稱的完整資料
+        // 行程資料 (已補上 3/6 餐廳與 3/8 東京站動線)
         const tripData = {
             1: [
-                { time: "07:35", tag: "Flight", title: "桃園機場 CI154 出發", icon: "fa-plane", lat: 25.079, lng: 121.234, img: "tpe_airport.png" },
-                { transit: "中華航空 CI154", from: "TPE", to: "NGO", duration: "3h 30m" },
-                { time: "11:05", tag: "Arrival", title: "抵達中部國際機場", icon: "fa-plane-arrival", lat: 34.858, lng: 136.811 },
-                { transit: "名鐵 μ-sky 特急", from: "中部機場", to: "名鐵名古屋", duration: "28m" },
-                { time: "12:45", tag: "Arrival", title: "抵達名古屋車站", icon: "fa-location-dot", lat: 35.170, lng: 136.881 },
+                { time: "07:35", tag: "Flight", title: "桃園機場 CI154 出發", icon: "fa-plane" },
+                { transit: "中華航空 CI154", from: "TPE", to: "NGO", duration: "3.5h" },
+                { time: "11:05", tag: "Arrival", title: "抵達中部國際機場", icon: "fa-plane-arrival" },
+                { transit: "名鐵 μ-sky 特急", from: "中部機場站", to: "名鐵名古屋站", duration: "28m" },
+                { time: "12:45", tag: "Arrival", title: "抵達名古屋車站", icon: "fa-location-dot" },
                 { transit: "JR 新幹線 Nozomi", from: "名古屋 (14:57)", to: "東京 (16:33)", duration: "1h 36m" },
-                { transit: "JR 山手線", from: "東京", to: "御徒町", duration: "6m" },
+                { transit: "JR 山手線", from: "東京站", to: "御徒町站", duration: "6m" },
                 { time: "17:00", tag: "Hotel", title: "APA新御徒町", icon: "fa-hotel", lat: 35.706, lng: 139.780 },
+                { transit: "步行", from: "飯店", to: "阿美橫町", duration: "12m" },
                 { time: "17:30", tag: "Night", title: "阿美橫町 & 秋葉原", icon: "fa-bag-shopping", lat: 35.698, lng: 139.773 },
+                { transit: "JR 山手線", from: "秋葉原", to: "御徒町站", duration: "10m" },
                 { time: "21:30", tag: "Hotel", title: "APA新御徒町", icon: "fa-moon" }
             ],
             2: [
                 { time: "08:00", tag: "Hotel", title: "APA新御徒町", icon: "fa-sun", lat: 35.706, lng: 139.780 },
                 { transit: "筑波快線", from: "新御徒町", to: "淺草", duration: "10m" },
                 { time: "09:00", tag: "Culture", title: "淺草寺", icon: "fa-torii-gate", lat: 35.714, lng: 139.796 },
-                { transit: "都營淺草線 → JR 總武線", from: "淺草", to: "水道橋", duration: "10m" },
+                { transit: "都營淺草線 → JR 總武線", from: "淺草站", to: "水道橋站", duration: "12m" },
                 { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 澳洲", icon: "fa-baseball-bat-ball", lat: 35.705, lng: 139.751 },
                 { transit: "都營三田線", from: "水道橋", to: "神保町", duration: "2m" },
                 { time: "16:00", tag: "Shop", title: "Mizuno 旗艦店", icon: "fa-store", lat: 35.695, lng: 139.762 },
@@ -170,17 +207,18 @@
             ],
             3: [
                 { time: "08:00", tag: "Hotel", title: "APA新御徒町", icon: "fa-sun", lat: 35.706, lng: 139.780 },
-                { transit: "JR 京濱東北線 → 東海道本線", from: "御徒町", to: "大船", duration: "50m" },
-                { transit: "湘南單軌電車", from: "大船", to: "湘南江之島", duration: "14m" },
+                { transit: "JR 京濱東北線 → JR 東海道線", from: "御徒町", to: "大船", duration: "50m" },
+                { transit: "湘南單軌電車 (懸吊式)", from: "大船站", to: "湘南江之島站", duration: "14m" },
                 { time: "10:00", tag: "Tour", title: "江之島散策", icon: "fa-umbrella-beach", lat: 35.301, lng: 139.481 },
                 { transit: "江之電", from: "江之島", to: "高校前", duration: "8m" },
-                { time: "12:15", tag: "Photo", title: "高校前平交道", icon: "fa-camera", lat: 35.306, lng: 139.502 },
+                { time: "12:15", tag: "Photo", title: "高校前平交道朝聖", icon: "fa-camera", lat: 35.306, lng: 139.502 },
                 { transit: "江之電", from: "高校前", to: "長谷", duration: "10m" },
                 { time: "13:30", tag: "Culture", title: "鎌倉大佛", icon: "fa-vihara", lat: 35.316, lng: 139.536 },
                 { transit: "江之電", from: "長谷", to: "鎌倉", duration: "5m" },
                 { time: "15:00", tag: "Culture", title: "小町通 & 八幡宮", icon: "fa-torii-gate", lat: 35.326, lng: 139.556 },
-                { transit: "JR 湘南新宿線", from: "鎌倉", to: "新宿", duration: "60m" },
-                { time: "19:00", tag: "WBC", title: "📺 轉播應援", icon: "fa-tv", lat: 35.698, lng: 139.773 }
+                { transit: "JR 湘南新宿線", from: "鎌倉站", to: "上野站", duration: "65m" },
+                { time: "19:00", tag: "WBC", title: "📺 轉播：The world end", icon: "fa-tv", desc: "京成上野 The world end 餐廳看轉播。", lat: 35.711, lng: 139.773 },
+                { time: "22:00", tag: "Hotel", title: "APA新御徒町", icon: "fa-moon" }
             ],
             4: [
                 { time: "09:30", tag: "Hotel", title: "APA新御徒町", icon: "fa-sun", lat: 35.706, lng: 139.780 },
@@ -188,23 +226,26 @@
                 { time: "10:00", tag: "Culture", title: "日枝神社參拜", icon: "fa-vihara", lat: 35.674, lng: 139.739 },
                 { transit: "Metro 南北線", from: "永田町", to: "後樂園", duration: "8m" },
                 { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 捷克", icon: "fa-baseball-bat-ball", lat: 35.705, lng: 139.751 },
-                { transit: "JR 中央線 → 山手線", from: "水道橋", to: "原宿", duration: "14m" },
+                { transit: "JR 中央線 → 山手線", from: "水道橋", to: "原宿", duration: "15m" },
                 { time: "16:00", tag: "Shopping", title: "原宿 & 澀谷", icon: "fa-masks-theater", lat: 35.659, lng: 139.701 },
                 { transit: "JR 山手線", from: "澀谷", to: "御徒町", duration: "33m" },
                 { time: "21:30", tag: "Hotel", title: "APA新御徒町", icon: "fa-hotel" }
             ],
             5: [
-                { time: "10:00", tag: "Hotel", title: "APA新御徒町 (寄行李)", icon: "fa-suitcase", lat: 35.706, lng: 139.780 },
-                { transit: "都營大江戶線", from: "新御徒町", to: "春日", duration: "5m" },
+                { time: "08:30", tag: "Hotel", title: "APA新御徒町 退房", icon: "fa-suitcase", lat: 35.706, lng: 139.780 },
+                { transit: "JR 山手線", from: "御徒町站", to: "東京站", duration: "6m" },
+                { time: "09:00", tag: "Transit", title: "東京車站 (寄放行李)", icon: "fa-briefcase", desc: "建議寄放在日本橋口人工寄存處。", lat: 35.681, lng: 139.767 },
+                { transit: "JR 中央線", from: "東京站", to: "水道橋站", duration: "10m" },
                 { time: "12:00", tag: "WBC", title: "⚾ 台灣 vs 韓國", icon: "fa-fire", lat: 35.705, lng: 139.751 },
-                { transit: "JR 山手線 → 新幹線", from: "御徒町", to: "名古屋", duration: "2h" },
+                { transit: "JR 中央線", from: "水道橋站", to: "東京站", duration: "10m" },
+                { transit: "JR 新幹線 Nozomi", from: "東京 (18:21)", to: "名古屋 (19:56)", duration: "1h 35m" },
                 { time: "21:00", tag: "Hotel", title: "APA 名古屋站前北", icon: "fa-hotel", lat: 35.174, lng: 136.884 }
             ],
             6: [
                 { time: "09:00", tag: "Hotel", title: "APA 名古屋站前北", icon: "fa-sun", lat: 35.174, lng: 136.884 },
-                { transit: "地鐵 櫻通線 → 名城線", from: "名古屋", to: "名古屋城", duration: "6m" },
-                { time: "09:30", tag: "Sightseeing", title: "名古屋城", icon: "fa-chess-rook", lat: 35.184, lng: 136.901 },
-                { transit: "地鐵 鶴舞線", from: "市役所", to: "大須觀音", duration: "10m" },
+                { transit: "地鐵 櫻通線 → 名城線", from: "名古屋", to: "名古屋城", duration: "12m" },
+                { time: "09:30", tag: "Sightseeing", title: "名古屋城巡禮", icon: "fa-chess-rook", lat: 35.184, lng: 136.901 },
+                { transit: "地鐵 鶴舞線", from: "市役所", to: "大須觀音", duration: "15m" },
                 { time: "12:00", tag: "Market", title: "大須觀音&商店街", icon: "fa-store", lat: 35.159, lng: 136.899 },
                 { transit: "地鐵 名城線", from: "上前津", to: "榮", duration: "5m" },
                 { time: "16:00", tag: "Night", title: "榮商圈 & 綠洲 21", icon: "fa-tower-observation", lat: 35.171, lng: 136.909 },
@@ -249,7 +290,7 @@
                 const div = document.createElement('div');
                 div.className = `date-item ${dayNum === currentDay ? 'active-date' : ''}`;
                 div.onclick = () => { currentDay = dayNum; toggleView('itinerary'); };
-                div.innerHTML = `<div class="text-[7px] font-bold">MAR</div><div class="text-base font-black date-num">${date.getDate()}</div><div class="date-dot"></div><div class="text-[7px] font-bold opacity-60">${daysOfWeek[date.getDay()]}</div>`;
+                div.innerHTML = `<div class="text-[7px] font-bold text-gray-400">MAR</div><div class="text-base font-black date-num leading-tight text-gray-700">${date.getDate()}</div><div class="date-dot"></div><div class="text-[7px] font-bold text-gray-400">${daysOfWeek[date.getDay()]}</div>`;
                 picker.appendChild(div);
             }
         }
@@ -259,11 +300,19 @@
             container.innerHTML = '';
             let html = '<div class="timeline-wrapper"><div class="timeline-line"></div>';
             tripData[currentDay].forEach((item, idx) => {
+                const color = colors[idx % colors.length];
                 if (item.transit) {
                     html += `<div class="transit-step"><div class="transit-badge"><span><i class="fas fa-bolt text-blue-500"></i> ${item.transit}</span> <span class="mx-1 opacity-20">|</span> <span>${item.from} → ${item.to} (${item.duration})</span></div></div>`;
                 } else {
-                    const color = colors[idx % colors.length];
-                    html += `<div class="relative mb-6 pl-10"><div class="timeline-dot" style="border-color:${color}"></div><div class="flex items-baseline mb-2"><span class="text-xl font-serif font-black text-gray-800 mr-3">${item.time}</span><div class="h-[1px] flex-1 bg-gray-200"></div></div><div class="itinerary-card p-4 active:scale-95" style="border-left-color:${color}" onclick="showModal('${encodeURIComponent(JSON.stringify(item))}')"><h3 class="text-base font-bold text-gray-700">${item.title}</h3></div></div>`;
+                    html += `
+                    <div class="relative mb-6 pl-10">
+                        <div class="timeline-dot" style="border-color:${color}"></div>
+                        <div class="flex items-baseline mb-2"><span class="text-xl font-serif font-black text-gray-800 mr-3">${item.time}</span><div class="h-[1px] flex-1 bg-gray-200"></div></div>
+                        <div class="itinerary-card p-4 active:scale-95 transition-all" style="border-left-color:${color}" onclick="showModal('${encodeURIComponent(JSON.stringify(item))}')">
+                            <div class="flex items-center justify-between mb-1"><span class="text-[9px] font-bold uppercase tracking-widest text-gray-400">${item.tag || 'GO'}</span></div>
+                            <h3 class="text-base font-bold leading-tight text-gray-700">${item.title}</h3>
+                        </div>
+                    </div>`;
                 }
             });
             html += '<div id="map-container"></div></div>';
@@ -273,12 +322,12 @@
 
         function renderDailyMap() {
             if (map) map.remove();
-            const el = document.getElementById('map-container'); if (!el) return;
+            const mapEl = document.getElementById('map-container'); if (!mapEl) return;
             map = L.map('map-container', { zoomControl: false, attributionControl: false });
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
             const markers = [];
             tripData[currentDay]?.forEach(p => { if (p.lat && p.lng) { L.marker([p.lat, p.lng]).addTo(map); markers.push([p.lat, p.lng]); } });
-            if (markers.length > 0) map.fitBounds(L.polyline(markers).getBounds(), { padding: [30, 30] });
+            if (markers.length > 0) map.fitBounds(L.polyline(markers).getBounds(), { padding: [40, 40] });
             map.invalidateSize();
         }
 
@@ -294,18 +343,19 @@
         async function addExpense() {
             const date = document.getElementById('exp-date').value, rate = parseFloat(document.getElementById('exp-rate').value), amount = parseFloat(document.getElementById('exp-amount').value), currency = document.getElementById('exp-currency').value, desc = document.getElementById('exp-desc').value, payer = document.getElementById('exp-payer').value;
             const checked = Array.from(document.querySelectorAll('#split-checkboxes input:checked')).map(i => i.value);
-            if (!amount || !desc || checked.length === 0) return alert("填寫完整資料");
+            if (!amount || !desc || checked.length === 0) return alert("請填齊資料");
             const twd = currency === 'JPY' ? amount * rate : amount;
             expenses.unshift({ id: Date.now(), date, rate, amount, currency, desc, payer, splitWith: checked, twd });
             localStorage.setItem('wbc_expenses', JSON.stringify(expenses)); renderLedger();
             try { await fetch(SYNC_URL, { method: 'POST', body: JSON.stringify(expenses) }); } catch(e){}
+            document.getElementById('exp-amount').value = ''; document.getElementById('exp-desc').value = '';
         }
 
         function renderLedger() {
             let balance = {}; members.forEach(m => balance[m] = 0);
-            expenses.forEach(e => { const share = e.twd / e.splitWith.length; balance[e.payer] += e.twd; e.splitWith.forEach(m => balance[m] -= share); });
+            expenses.forEach(e => { const share = e.twd / (e.splitWith.length || 1); balance[e.payer] += e.twd; e.splitWith.forEach(m => balance[m] -= share); });
             document.getElementById('settlement-box').innerHTML = members.map(m => `<div class="flex justify-between items-center text-[10px] font-bold p-3 bg-white rounded-xl shadow-sm border border-gray-50"><span>${m}</span><span class="${balance[m] >= 0 ? 'text-green-600' : 'text-red-500'}">${balance[m] >= 0 ? '應收' : '應付'} NT$${Math.abs(Math.round(balance[m]))}</span></div>`).join('');
-            document.getElementById('expense-list').innerHTML = expenses.map(e => `<div class="bg-white p-4 rounded-xl border border-gray-100 flex justify-between items-center shadow-sm mb-2"><div><div class="text-[9px] font-bold text-gray-400">${e.date} | ${e.payer}</div><div class="text-sm font-bold text-gray-800">${e.desc}</div></div><div class="text-right"><div class="text-base font-black">${e.amount} ${e.currency}</div><button onclick="deleteExpense(${e.id})" class="text-red-400 text-xs mt-1"><i class="fas fa-trash-can"></i></button></div></div>`).join('');
+            document.getElementById('expense-list').innerHTML = expenses.map(e => `<div class="bg-white p-4 rounded-xl border border-gray-100 flex justify-between items-center shadow-sm mb-2"><div><div class="text-[9px] font-bold text-gray-400 uppercase">${e.date} | ${e.payer}</div><div class="text-sm font-bold text-gray-800">${e.desc}</div><div class="text-[8px] text-blue-500 font-bold uppercase mt-1">Split: ${e.splitWith.join(', ')}</div></div><div class="text-right"><div class="text-base font-black text-gray-900">${e.amount} ${e.currency}</div><div class="text-[9px] text-gray-400 font-bold">≈ NT$${Math.round(e.twd)}</div><button onclick="deleteExpense(${e.id})" class="text-red-400 text-xs mt-1"><i class="fas fa-trash-can"></i></button></div></div>`).join('');
         }
 
         async function autoSyncFromCloud() { try { const res = await fetch(SYNC_URL); const data = await res.json(); if (data && data.length > 0) { expenses = data; localStorage.setItem('wbc_expenses', JSON.stringify(expenses)); renderLedger(); } } catch(e){} }
@@ -314,14 +364,12 @@
         function showModal(s) {
             const item = JSON.parse(decodeURIComponent(s));
             const m = document.getElementById('detail-modal');
-            document.getElementById('modal-img').src = item.img || "https://images.unsplash.com/photo-1542365887-11499f1ddee5?q=80&w=1000";
+            document.getElementById('modal-img').src = "https://images.unsplash.com/photo-1542365887-11499f1ddee5?q=80&w=1000";
             document.getElementById('modal-title').innerText = item.title;
-            document.getElementById('modal-desc').innerText = `地點詳細資訊。台灣隊加油！`;
-            // 修正 Google Maps API 標準導航連結
+            document.getElementById('modal-desc').innerText = item.desc || `地點導航與詳細資訊。台灣英雄加油！`;
             document.getElementById('modal-google-link').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title)}`;
             m.classList.remove('hidden'); setTimeout(() => { m.classList.remove('opacity-0'); m.querySelector('div').classList.remove('translate-y-full'); }, 10);
         }
-
         function closeModal() { const m = document.getElementById('detail-modal'); m.classList.add('opacity-0'); m.querySelector('div').classList.add('translate-y-full'); setTimeout(() => m.classList.add('hidden'), 300); }
         window.onload = initApp;
     </script>
